@@ -1,0 +1,508 @@
+<header class="bg-white shadow-md py-4">
+  <div class="w-full px-4">
+    <h1 class="text-2xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+      <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+          ➡︎ Gestion de Productos
+      </span>
+    </h1>
+  </div>
+</header>
+
+<div class="container mx-auto my-4 md:my-8 p-3 md:p-4 bg-white shadow-md rounded-lg">
+  <div class="container mx-auto my-4 md:my-8 p-3 md:p-4 bg-white shadow-md rounded-lg">
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-3">
+    <h2 class="text-xl md:text-2xl font-bold">Listado de Productos</h2>
+    
+    <!-- Botones de acción -->
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+      <!-- Botón para generar reporte PDF -->
+      <button 
+        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 md:py-2.5 md:px-4 rounded flex items-center justify-center text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-red-300 transition"
+        (click)="generatePDFReport()"
+        aria-label="Generar reporte PDF"
+      >
+        <i class="fas fa-file-pdf mr-2"></i> Generar PDF
+      </button>
+      
+      <!-- Botón para agregar producto -->
+      <button 
+        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-2.5 md:px-4 rounded flex items-center justify-center text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+        (click)="addProduct()"
+        aria-label="Agregar un nuevo producto"
+      >
+        <i class="fas fa-plus mr-2"></i> Agregar Producto
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Filtros -->
+  <div class="flex flex-col md:flex-row md:items-center mb-4 gap-3">
+    <!-- Switcher de Estado -->
+    <div class="flex items-center">
+      <span class="mr-2 font-semibold text-sm md:text-base">Estado:</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input 
+          type="checkbox" 
+          class="sr-only peer" 
+          [(ngModel)]="statusActive" 
+          (change)="applyFilters()">
+        <div 
+          class="w-10 h-5 md:w-11 md:h-6 bg-red-500 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer 
+          peer-checked:bg-green-500 
+          peer-checked:after:translate-x-5 peer-checked:after:border-white 
+          after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+          after:bg-white after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 
+          after:transition-all">
+        </div>
+        <span class="ml-3 text-xs md:text-sm font-medium text-gray-900">
+          {{ statusActive ? 'Activos' : 'Inactivos' }}
+        </span>
+      </label>
+    </div>
+
+    <!-- Selector de Tipo de Producto -->
+    <div class="flex items-center ml-0 md:ml-4">
+      <span class="mr-2 font-semibold text-sm md:text-base">Tipo Producto:</span>
+      <div class="flex space-x-2">
+        <button 
+          *ngFor="let type of productTypes" 
+          class="px-2 py-1 rounded text-xs md:text-sm font-medium transition-colors"
+          [ngClass]="{'bg-blue-600 text-white': selectedProductType === type.code, 'bg-gray-200 text-gray-800 hover:bg-gray-300': selectedProductType !== type.code}"
+          (click)="selectProductType(type.code)">
+          {{ type.code === 'ALL' ? 'Todos' : type.code }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leyenda de tipos de producto -->
+  <!-- Leyenda de tipos de producto con tooltips -->
+<div class="mb-4 text-xs md:text-sm bg-gray-100 p-2 rounded flex flex-wrap gap-2 relative">
+  <span class="font-semibold">Leyenda:</span>
+  
+  <!-- Tooltips para MP -->
+  <span class="px-2 py-0.5 bg-blue-100 rounded flex items-center group relative cursor-help">
+      <i class="fas fa-box-open mr-1 text-blue-600"></i> MP: Materias Primas
+      <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-gray-800 text-white p-2 rounded shadow-lg z-10">
+        <p class="text-xs">
+          <strong>MP (Materias Primas):</strong> Son los materiales básicos que se usan para hacer algo.
+          <br><em>Ejemplo:</em> Son como los ingredientes para cocinar.
+        </p>
+        <div class="absolute top-full left-4 w-3 h-3 bg-gray-800 transform rotate-45"></div>
+      </div>
+    </span>
+    
+    <!-- Tooltips para PP -->
+    <span class="px-2 py-0.5 bg-yellow-100 rounded flex items-center group relative cursor-help">
+      <i class="fas fa-tools mr-1 text-yellow-600"></i> PP: Productos en Proceso
+      <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-gray-800 text-white p-2 rounded shadow-lg z-10">
+        <p class="text-xs">
+          <strong>PP (Productos en Proceso):</strong> Son las cosas que ya se están haciendo, pero todavía no están listas.
+          <br><em>Ejemplo:</em> Es como cuando estás cocinando y la comida no está terminada.
+        </p>
+        <div class="absolute top-full left-4 w-3 h-3 bg-gray-800 transform rotate-45"></div>
+      </div>
+    </span>
+    
+    <!-- Tooltips para PT -->
+    <span class="px-2 py-0.5 bg-green-100 rounded flex items-center group relative cursor-help">
+      <i class="fas fa-check-circle mr-1 text-green-600"></i> PT: Productos Terminados
+      <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-gray-800 text-white p-2 rounded shadow-lg z-10">
+        <p class="text-xs">
+          <strong>PT (Productos Terminados):</strong> Son las cosas que ya están listas para usarse o venderse.
+          <br><em>Ejemplo:</em> Es como cuando la comida ya está lista para servir.
+        </p>
+        <div class="absolute top-full left-4 w-3 h-3 bg-gray-800 transform rotate-45"></div>
+      </div>
+    </span>
+  </div>
+
+  <!-- Resumen de stock ANTES de la tabla -->
+<div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  
+  <!-- Stock Total -->
+  <div class="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4">
+    <div class="flex items-center">
+      <i class="fas fa-boxes text-green-600 text-2xl mr-3"></i>
+      <div>
+        <p class="text-sm font-medium text-green-800">Stock Total</p>
+        <p class="text-2xl font-bold text-green-900">{{ getTotalStock() | number }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Filtrado -->
+  <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+    <div class="flex items-center">
+      <i class="fas fa-filter text-blue-600 text-2xl mr-3"></i>
+      <div>
+        <p class="text-sm font-medium text-blue-800">Stock Mostrado</p>
+        <p class="text-2xl font-bold text-blue-900">{{ getFilteredTotalStock() | number }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón de Resumen -->
+  <div class="flex items-center justify-center">
+    <button 
+      (click)="showStockSummary()" 
+      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-full">
+      <i class="fas fa-chart-bar mr-2"></i>
+      Ver Resumen Completo
+    </button>
+  </div>
+</div>
+
+<!-- Sección de Filtros de Fecha (agregar después de los filtros existentes) -->
+<div class="bg-gray-50 p-4 rounded-lg mb-4 border border-gray-200">
+  <div class="flex flex-col md:flex-row md:items-center mb-3 gap-3">
+    <!-- Switch para activar/desactivar filtro de fechas -->
+    <div class="flex items-center">
+      <span class="mr-2 font-semibold text-sm md:text-base">Filtrar por Fechas:</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input 
+          type="checkbox" 
+          class="sr-only peer" 
+          [(ngModel)]="dateFilterEnabled" 
+          (change)="switchDateFilter()">
+        <div 
+          class="w-10 h-5 md:w-11 md:h-6 bg-gray-400 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer 
+          peer-checked:bg-blue-500 
+          peer-checked:after:translate-x-5 peer-checked:after:border-white 
+          after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+          after:bg-white after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 
+          after:transition-all">
+        </div>
+        <span class="ml-3 text-xs md:text-sm font-medium text-gray-900">
+          {{ dateFilterEnabled ? 'Activado' : 'Desactivado' }}
+        </span>
+      </label>
+    </div>
+
+    <!-- Botón para limpiar filtros de fecha -->
+    <button 
+      *ngIf="dateFilterEnabled"
+      class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-1.5 px-3 rounded text-xs md:text-sm flex items-center transition"
+      (click)="resetDateFilter()"
+      aria-label="Limpiar filtro de fechas">
+      <i class="fas fa-eraser mr-1"></i> Limpiar
+    </button>
+  </div>
+
+  <!-- Rangos predefinidos -->
+  <div *ngIf="dateFilterEnabled" class="mb-4">
+    <span class="block text-sm font-medium text-gray-700 mb-2">Rangos Rápidos:</span>
+    <div class="flex flex-wrap gap-2">
+      <button 
+        *ngFor="let preset of [
+          {code: 'today', label: 'Hoy'},
+          {code: 'yesterday', label: 'Ayer'},
+          {code: 'thisWeek', label: 'Esta Semana'},
+          {code: 'thisMonth', label: 'Este Mes'},
+          {code: 'lastMonth', label: 'Mes Pasado'},
+          {code: 'last30Days', label: 'Últimos 30 días'},
+          {code: 'last90Days', label: 'Últimos 90 días'}
+        ]"
+        class="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs rounded transition"
+        (click)="setDateRangePreset(preset.code)">
+        {{ preset.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Campos de fecha personalizados -->
+  <div *ngIf="dateFilterEnabled" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Fecha de inicio -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+        <i class="fas fa-calendar-alt mr-1 text-blue-600"></i> Fecha Inicio:
+      </label>
+      <input 
+        type="date" 
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+        [(ngModel)]="startDate"
+        (change)="handleDateChange()"
+        [max]="endDate || null"
+        placeholder="Seleccionar fecha de inicio">
+    </div>
+
+    <!-- Fecha de fin -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+        <i class="fas fa-calendar-alt mr-1 text-blue-600"></i> Fecha Fin:
+      </label>
+      <input 
+        type="date" 
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+        [(ngModel)]="endDate"
+        (change)="handleDateChange()"
+        [min]="startDate || null"
+        placeholder="Seleccionar fecha de fin">
+    </div>
+  </div>
+
+  <!-- Texto descriptivo del rango de fechas -->
+  <div *ngIf="dateFilterEnabled && getDateRangeText()" class="mt-3 p-2 bg-blue-50 border border-blue-200 rounded">
+    <div class="flex items-center text-sm text-blue-800">
+      <i class="fas fa-info-circle mr-2"></i>
+      <span>Mostrando productos <strong>{{ getDateRangeText() }}</strong></span>
+    </div>
+  </div>
+
+  <!-- Tabla en Pantallas Medianas y Grandes -->
+  <div class="hidden md:block overflow-x-auto">
+    <table class="w-full border-separate border-spacing-y-2 text-sm md:text-base">
+      <thead>
+        <tr class="bg-blue-100 text-blue-900 text-center">
+          <th class="px-2 py-3 font-semibold">Producto</th>
+          <th class="px-2 py-3 font-semibold">Descripción</th>
+          <th class="px-2 py-3 font-semibold">Peso (kg)</th>
+          <th class="px-2 py-3 font-semibold">Stock</th>
+          <th class="px-2 py-3 font-semibold">Ingreso</th>
+          <th class="px-2 py-3 font-semibold">Tipo Producto</th>
+          <th class="px-2 py-3 font-semibold">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of paginatedProducts" class="bg-gray-50 hover:bg-gray-100 text-center border-b">
+          <td class="px-2 py-3">{{ product.type }}</td>
+          <td class="px-2 py-3">{{ product.description }}</td>
+          <td class="px-2 py-3">{{ product.packageWeight }}</td>
+          <td class="px-2 py-3">{{ product.stock }}</td>
+          <td class="px-2 py-3">{{ product.entryDate | date: 'dd-MMM-yyyy' : 'es' }}</td>
+          <td class="px-2 py-3">
+            <span [ngClass]="{
+              'px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800': product.typeProduct === 'MP',
+              'px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800': product.typeProduct === 'PP',
+              'px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800': product.typeProduct === 'PT'
+            }">
+              {{ getProductTypeText(product.typeProduct) }}
+            </span>
+          </td>
+          <td class="px-2 py-3 flex justify-center space-x-2 text-lg">
+            <button *ngIf="product.status === 'A'" class="text-blue-500 hover:text-blue-700" (click)="openModal(product)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button *ngIf="product.status === 'A'" class="text-red-500 hover:text-red-700" (click)="softDeleteProduct(product.id)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <button *ngIf="product.status === 'I'" class="text-green-500 hover:text-green-700" (click)="restoreProduct(product.id)">
+              <i class="fas fa-undo"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Vista para dispositivos móviles mejorada con iconos -->
+  <div class="md:hidden">
+    <div *ngFor="let product of paginatedProducts" class="bg-gray-50 p-3 rounded-lg mb-3 shadow-sm">
+      <div class="flex justify-between items-center mb-2">
+        <div class="flex items-center">
+          <!-- Icono según tipo de producto -->
+          <span class="mr-2 text-blue-600">
+            <i class="fas" [ngClass]="{'fa-egg': product.type === 'huevos', 'fa-drumstick-bite': product.type === 'pollo', 'fa-seedling': product.type === 'abono', 'fa-box': product.type !== 'huevos' && product.type !== 'pollo' && product.type !== 'abono'}"></i>
+          </span>
+          <span class="font-bold text-sm capitalize">{{ product.type }}</span>
+        </div>
+        <div class="flex space-x-2">
+          <button *ngIf="product.status === 'A'" class="text-blue-500 hover:text-blue-700 p-1.5" (click)="openModal(product)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button *ngIf="product.status === 'A'" class="text-red-500 hover:text-red-700 p-1.5" (click)="softDeleteProduct(product.id)">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+          <button *ngIf="product.status === 'I'" class="text-green-500 hover:text-green-700 p-1.5" (click)="restoreProduct(product.id)">
+            <i class="fas fa-undo"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-2 space-y-1.5">
+        <div class="flex items-center text-xs">
+          <span class="text-gray-600 w-6">
+            <i class="fas fa-info-circle"></i>
+          </span>
+          <span class="font-semibold mr-1">Descripción:</span>
+          <span>{{ product.description }}</span>
+        </div>
+        
+        <div class="flex items-center text-xs">
+          <span class="text-gray-600 w-6">
+            <i class="fas fa-weight"></i>
+          </span>
+          <span class="font-semibold mr-1">Peso:</span>
+          <span>{{ product.packageWeight }} kg</span>
+        </div>
+        
+        <div class="flex items-center text-xs">
+          <span class="text-gray-600 w-6">
+            <i class="fas fa-boxes"></i>
+          </span>
+          <span class="font-semibold mr-1">Stock:</span>
+          <span>{{ product.stock }}</span>
+        </div>
+        
+        <div class="flex items-center text-xs">
+          <span class="text-gray-600 w-6">
+            <i class="fas fa-calendar-alt"></i>
+          </span>
+          <span class="font-semibold mr-1">Ingreso:</span>
+          <span>{{ product.entryDate | date: 'dd-MMM-yyyy' : 'es' }}</span>
+        </div>
+
+        <div class="flex items-center text-xs">
+          <span class="text-gray-600 w-6">
+            <i class="fas fa-tag"></i>
+          </span>
+          <span class="font-semibold mr-1">Tipo:</span>
+          <span [ngClass]="{
+            'px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800': product.typeProduct === 'MP',
+            'px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800': product.typeProduct === 'PP',
+            'px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800': product.typeProduct === 'PT'
+          }">{{ getProductTypeText(product.typeProduct) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="isLoading" class="text-center mt-4">
+    <p class="text-sm md:text-base">Cargando productos...</p>
+  </div>
+
+  <!-- Mensaje cuando no hay productos -->
+  <div *ngIf="!isLoading && filteredProducts.length === 0" class="text-center mt-4 p-3 md:p-4 bg-gray-100 rounded">
+    <p class="text-sm md:text-base">No hay productos {{ statusActive ? 'activos' : 'inactivos' }} {{getProductTypeFilterText()}} para mostrar.</p>
+  </div>
+
+  <!-- Paginador -->
+  <div *ngIf="filteredProducts.length > 0" class="flex justify-center mt-4 space-x-1 md:space-x-2">
+    <button 
+      class="px-2 md:px-3 py-1 md:py-2 bg-gray-300 rounded-md text-xs md:text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+      [disabled]="currentPage === 1"
+      (click)="cambiarPagina(currentPage - 1)">
+      <i class="fas fa-chevron-left mr-1"></i> Anterior
+    </button>
+
+    <button 
+      *ngFor="let page of getPages()"
+      class="px-2 md:px-3 py-1 md:py-2 rounded-md text-xs md:text-sm font-semibold"
+      [ngClass]="{'bg-blue-500 text-white': currentPage === page, 'bg-gray-200 hover:bg-gray-300': currentPage !== page}"
+      (click)="cambiarPagina(page)">
+      {{ page === -1 || page === -2 ? '...' : page }}
+    </button>
+      
+    <button 
+      class="px-2 md:px-3 py-1 md:py-2 bg-gray-300 rounded-md text-xs md:text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+      [disabled]="currentPage === getPages().length"
+      (click)="cambiarPagina(currentPage + 1)">
+      Siguiente <i class="fas fa-chevron-right ml-1"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Modal para Crear/Editar Producto (Responsive) -->
+<div *ngIf="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-70 flex items-center justify-center z-50 p-3">
+  <div class="bg-white rounded-lg shadow-lg p-4 md:p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg md:text-xl font-bold text-blue-900">
+        <i class="fas" [ngClass]="{'fa-plus-circle': !editMode, 'fa-edit': editMode}"></i>
+        {{ editMode ? ' Editar Producto' : ' Nuevo Producto' }}
+      </h3>
+      <button class="text-gray-500 hover:text-gray-700" (click)="closeModal()">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+
+    <form (ngSubmit)="saveProduct()">
+      <!-- Campo oculto para mantener el status -->
+      <input type="hidden" [(ngModel)]="currentProduct.status" name="status">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+        <!-- Tipo -->
+          <div class="mb-2 md:mb-3">
+            <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1 flex items-center">
+              <i class="fas fa-tag mr-1 text-blue-600"></i> Nombre Producto:
+            </label>
+            <input type="text" class="px-2 md:px-3 py-1 md:py-2 rounded border w-full text-sm"
+                  [(ngModel)]="currentProduct.type"
+                  name="type"
+                  required
+                  #type="ngModel"
+                  [class.border-red-500]="type.invalid && type.touched"
+                  placeholder="">
+            <div *ngIf="type.invalid && type.touched" class="text-red-500 text-xs mt-1">
+              El tipo es requerido.
+            </div>
+          </div>
+        
+        <!-- Descripción -->
+        <div class="mb-2 md:mb-3">
+          <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-info-circle mr-1 text-blue-600"></i> Descripción:
+          </label>
+          <input type="text" class="px-2 md:px-3 py-1 md:py-2 rounded border w-full text-sm" 
+                 [(ngModel)]="currentProduct.description" name="description" required>
+        </div>
+
+        <!-- Peso del Paquete -->
+        <div class="mb-2 md:mb-3">
+          <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-weight mr-1 text-blue-600"></i> Peso paq.(kg):
+          </label>
+          <input type="number" class="px-2 md:px-3 py-1 md:py-2 rounded border w-full text-sm" 
+                 [(ngModel)]="currentProduct.packageWeight" name="packageWeight" min="0" step="0.01" required>
+        </div>
+
+        <!-- Stock -->
+        <div class="mb-2 md:mb-3">
+          <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-boxes mr-1 text-blue-600"></i> Stock paq.:
+          </label>
+          <input type="number" class="px-2 md:px-3 py-1 md:py-2 rounded border w-full text-sm" 
+                 [(ngModel)]="currentProduct.stock" name="stock" min="0" required>
+        </div>
+
+        <!-- Tipo de Producto -->
+        <div class="mb-2 md:mb-3">
+          <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-cubes mr-1 text-blue-600"></i> Tipo de Producto:
+          </label>
+          <select class="px-2 md:px-3 py-1 md:py-2 rounded border w-full text-sm"
+                  [(ngModel)]="currentProduct.typeProduct"
+                  name="typeProduct"
+                  required>
+            <option value="" disabled selected>Selecciona un tipo</option>
+            <option value="MP">MP - Materia Prima</option>
+            <option value="PP">PP - Producto en Proceso</option>
+            <option value="PT">PT - Producto Terminado</option>
+          </select>
+        </div>
+
+        <!-- Fecha de Ingreso -->
+        <div class="mb-2 md:mb-3">
+          <label class="block text-xs md:text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <i class="fas fa-calendar-alt mr-1 text-blue-600"></i> Fecha de Ingreso:
+          </label>
+          <input type="text" class="px-2 md:px-3 py-1 md:py-2 rounded border w-full bg-gray-100 cursor-not-allowed text-sm"
+                [value]="currentProduct.entryDate | date: 'dd-MMM-yyyy':'':'es'" 
+                name="entryDate" readonly>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 md:space-x-3 mt-4 md:mt-6">
+        <button type="button" class="px-3 md:px-4 py-1.5 md:py-2 bg-gray-300 text-gray-800 rounded text-sm hover:bg-gray-400 flex items-center" 
+                (click)="closeModal()">
+          <i class="fas fa-times mr-1"></i> Cancelar
+        </button>
+        <button type="submit" class="px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 flex items-center">
+          <i class="fas" [ngClass]="{'fa-save': editMode, 'fa-plus': !editMode}"></i>
+          <span class="ml-1">{{ editMode ? 'Actualizar' : 'Guardar' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

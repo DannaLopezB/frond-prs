@@ -1,0 +1,1006 @@
+<div class="min-h-screen bg-gray-50 p-4 md:p-6">
+    <!-- Header -->
+    <header class="bg-white shadow-md py-4 px-6 mb-6 rounded-lg">
+        <div class="w-full">
+            <h1 class="text-2xl font-extrabold text-blue-900 md:text-4xl">
+                <span class="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                    <i class="fas fa-city mr-2"></i> Gestión de Consumo Interno
+                </span>
+            </h1>
+        </div>
+    </header>
+
+    <div class="container mx-auto my-4 p-4 md:p-6 bg-white shadow-md rounded-lg">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+            <h2 class="text-lg md:text-xl font-bold mb-4 md:mb-0">
+                <i class="fas fa-list mr-2"></i>Registros de Consumo
+            </h2>
+            <button 
+                (click)="openFormConsumption()"
+                class="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full md:w-auto"
+            >
+                <i class="fas fa-plus mr-2"></i>
+                <span>Nuevo Consumo</span>
+            </button>
+        </div>
+
+        <!-- Panel de Control -->
+        <div class="mb-6 space-y-4">
+            <div class="flex flex-wrap gap-3">
+                <!-- Filtro Activo/Inactivo -->
+                <button 
+                    (click)="toggleConsumption()"
+                    class="flex items-center px-4 py-2 rounded-lg font-medium transition-colors"
+                    [class.bg-green-600]="showingActive"
+                    [class.bg-gray-600]="!showingActive"
+                    [class.text-white]="true"
+                >
+                    <i class="fas mr-2" [class.fa-eye]="showingActive" [class.fa-eye-slash]="!showingActive"></i>
+                    {{ showingActive ? 'Activos' : 'Inactivos' }}
+                </button>
+
+                <!-- Filtro por Fecha - Versión Mejorada -->
+                <div class="relative">
+                    <button 
+                        (click)="toggleDateFilter()"
+                        class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <i class="fas fa-calendar-day mr-2"></i>
+                        <span class="hidden md:inline">Filtrar por Fecha</span>
+                        <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-200" [class.transform.rotate-180]="showDateFilterPanel"></i>
+                    </button>
+
+                    <!-- Panel de filtro por fecha mejorado -->
+                    <div *ngIf="showDateFilterPanel" class="absolute z-20 mt-2 bg-white p-4 rounded-lg shadow-xl border border-gray-200 w-full md:w-96 animate-fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-filter text-blue-500 mr-2"></i>
+                                Filtro por Rango de Fechas
+                            </h3>
+                            <button 
+                                (click)="clearDateFilter()" 
+                                class="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                                [class.invisible]="!filteringByDate"
+                            >
+                                <i class="fas fa-times mr-1"></i>Limpiar
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="space-y-1">
+                                <label class="block text-sm font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-calendar-plus text-blue-500 mr-2 text-xs"></i>
+                                    Fecha Inicio
+                                </label>
+                                <div class="relative">
+                                    <input 
+                                        type="date" 
+                                        [(ngModel)]="startDate" 
+                                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-calendar-alt text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="block text-sm font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-calendar-minus text-blue-500 mr-2 text-xs"></i>
+                                    Fecha Fin
+                                </label>
+                                <div class="relative">
+                                    <input 
+                                        type="date" 
+                                        [(ngModel)]="endDate" 
+                                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-calendar-alt text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Rangos Predefinidos</h4>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button 
+                                    (click)="applyQuickRange('today')" 
+                                    [class.bg-blue-100]="activeQuickRange === 'today'"
+                                    [class.text-blue-800]="activeQuickRange === 'today'"
+                                    [class.border-blue-200]="activeQuickRange === 'today'"
+                                    class="text-xs px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex flex-col items-center"
+                                >
+                                    <i class="fas fa-sun mb-1"></i>
+                                    Hoy
+                                </button>
+
+                                <button 
+                                    (click)="applyQuickRange('yesterday')" 
+                                    [class.bg-blue-100]="activeQuickRange === 'yesterday'"
+                                    [class.text-blue-800]="activeQuickRange === 'yesterday'"
+                                    [class.border-blue-200]="activeQuickRange === 'yesterday'"
+                                    class="text-xs px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex flex-col items-center"
+                                >
+                                    <i class="fas fa-moon mb-1"></i>
+                                    Ayer
+                                </button>
+
+                                <button 
+                                    (click)="applyQuickRange('thisWeek')" 
+                                    [class.bg-blue-100]="activeQuickRange === 'thisWeek'"
+                                    [class.text-blue-800]="activeQuickRange === 'thisWeek'"
+                                    [class.border-blue-200]="activeQuickRange === 'thisWeek'"
+                                    class="text-xs px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex flex-col items-center"
+                                >
+                                    <i class="fas fa-calendar-week mb-1"></i>
+                                    Esta semana
+                                </button>
+
+                                <button 
+                                    (click)="applyQuickRange('thisMonth')" 
+                                    [class.bg-blue-100]="activeQuickRange === 'thisMonth'"
+                                    [class.text-blue-800]="activeQuickRange === 'thisMonth'"
+                                    [class.border-blue-200]="activeQuickRange === 'thisMonth'"
+                                    class="text-xs px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex flex-col items-center"
+                                >
+                                    <i class="fas fa-calendar mb-1"></i>
+                                    Este mes
+                                </button>
+
+                                <button 
+                                    (click)="applyQuickRange('lastMonth')" 
+                                    [class.bg-blue-100]="activeQuickRange === 'lastMonth'"
+                                    [class.text-blue-800]="activeQuickRange === 'lastMonth'"
+                                    [class.border-blue-200]="activeQuickRange === 'lastMonth'"
+                                    class="text-xs px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex flex-col items-center"
+                                >
+                                    <i class="fas fa-calendar-minus mb-1"></i>
+                                    Mes anterior
+                                </button>
+
+                                <button 
+                                    (click)="applyQuickRange('last30Days')" 
+                                    [class.bg-blue-100]="activeQuickRange === 'last30Days'"
+                                    [class.text-blue-800]="activeQuickRange === 'last30Days'"
+                                    [class.border-blue-200]="activeQuickRange === 'last30Days'"
+                                    class="text-xs px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex flex-col items-center"
+                                >
+                                    <i class="fas fa-history mb-1"></i>
+                                    Últimos 30 días
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button 
+                                (click)="closeDateFilter()" 
+                                class="flex-1 py-2 px-4 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                (click)="loadConsumption()" 
+                                class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                            >
+                                <i class="fas fa-check-circle mr-2"></i>Aplicar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buscador -->
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        [(ngModel)]="searchTerm" 
+                        (input)="applyFilter()"
+                        placeholder="Buscar por fecha, casa o tipo..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                </div>
+
+                <!-- Selector de Casa para Reporte -->
+                <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                    <select 
+                        [(ngModel)]="selectedHome" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                        <option value="">Todas las casas</option>
+                        <option *ngFor="let home of homesList" [value]="home">{{ home }}</option>
+                    </select>
+                    <button 
+                        (click)="downloadHomeReport()" 
+                        [disabled]="!selectedHome"
+                        class="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <i class="fas fa-file-alt mr-2"></i>
+                        <span class="hidden md:inline">Reporte</span>
+                    </button>
+                </div>
+
+                <!-- NUEVOS BOTONES: Historial y Reporte -->
+                <button 
+                    (click)="openHistoryDialog()" 
+                    class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                    <i class="fas fa-history mr-2"></i>
+                    <span class="hidden md:inline">Historial</span>
+                </button>
+
+                <button 
+                    (click)="openReportDialog()" 
+                    class="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    <span class="hidden md:inline">Reporte</span>
+                </button>
+
+                <!-- Dropdown de Exportación -->
+                <div class="relative inline-block export-dropdown-container">
+                    <button 
+                        (click)="showExportDropdown = !showExportDropdown"
+                        class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <i class="fas fa-file-export mr-2"></i>
+                        <span class="hidden md:inline">Exportar</span>
+                        <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                    </button>
+
+                    <div 
+                        *ngIf="showExportDropdown"
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200"
+                    >
+                        <div class="py-1">
+                            <a (click)="downloadPDF(); showExportDropdown = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                <i class="fas fa-file-pdf text-red-500 mr-2"></i> PDF General
+                            </a>
+                            <a (click)="downloadExcel(); showExportDropdown = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                <i class="fas fa-file-excel text-green-500 mr-2"></i> Excel
+                            </a>
+                            <a (click)="downloadCSV(); showExportDropdown = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                <i class="fas fa-file-csv text-blue-500 mr-2"></i> CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mostrar rango de fechas activo - Versión Mejorada -->
+            <div *ngIf="filteringByDate && startDate && endDate" class="flex items-center mt-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-100 text-sm text-blue-800">
+                <i class="fas fa-filter mr-2 text-blue-600"></i>
+                <span class="font-medium">Filtro activo:</span>
+                <span class="mx-1">{{ formatDisplayDate(startDate) }}</span>
+                <i class="fas fa-arrow-right text-xs mx-1 text-blue-600"></i>
+                <span class="mr-2">{{ formatDisplayDate(endDate) }}</span>
+                <button 
+                    (click)="clearDateFilter()" 
+                    class="ml-auto text-blue-600 hover:text-blue-800 flex items-center text-xs"
+                >
+                    <i class="fas fa-times mr-1"></i>Limpiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 bg-blue-100 rounded-full mr-4">
+                        <i class="fas fa-boxes text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Total Cantidad</h3>
+                        <p class="text-2xl font-bold text-gray-800">{{ totalQuantity }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 bg-green-100 rounded-full mr-4">
+                        <i class="fas fa-weight-hanging text-green-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Total Peso</h3>
+                        <p class="text-2xl font-bold text-gray-800">{{ totalWeight.toFixed(2) }} kg</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 bg-yellow-100 rounded-full mr-4">
+                        <i class="fas fa-tag text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Precio Promedio</h3>
+                        <p class="text-2xl font-bold text-gray-800">S/. {{ (totalPrice / (filteredConsumption.length || 1)).toFixed(2) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 bg-purple-100 rounded-full mr-4">
+                        <i class="fas fa-money-bill-wave text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Valor Total</h3>
+                        <p class="text-2xl font-bold text-gray-800">S/. {{ totalSaleValue.toFixed(2) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full border-separate border-spacing-y-2 text-sm md:text-base">
+                <thead>
+                    <tr>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center rounded-l-lg">Fecha</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center">Casa</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center">Tipo Producto</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center">Cantidad</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center">Peso (kg)</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center">Precio Uni.</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center">Valor Vent.</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center">Estado</th>
+                        <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100 text-center rounded-r-lg">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of getPaginatedItems()" class="bg-gray-50 hover:bg-gray-100 text-center">
+                        <td class="px-2 md:px-4 py-2 md:py-3 rounded-l-lg">{{ formatDate(item.date) }}</td>
+                        <td class="px-2 md:px-4 py-2 md:py-3">{{ item.names }}</td>
+                        <td class="px-2 md:px-4 py-2 md:py-3">{{ item.productType || 'N/A' }}</td>
+                        <td class="px-2 md:px-4 py-2 md:py-3">{{ item.quantity }}</td>
+                        <td class="px-2 md:px-4 py-2 md:py-3">{{ item.weight.toFixed(2) }}</td>
+                        <td class="px-2 md:px-4 py-2 md:py-3">S/. {{ item.price.toFixed(2) }}</td>
+                        <td class="px-2 md:px-4 py-2 md:py-3">S/. {{ item.salevalue.toFixed(2) }}</td>
+                        <td class="px-2 md:px-4 py-2 md:py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium" 
+                                [class.bg-green-100]="item.status === 'A'" 
+                                [class.text-green-600]="item.status === 'A'"
+                                [class.bg-red-100]="item.status !== 'A'"
+                                [class.text-red-600]="item.status !== 'A'">
+                                {{ item.status === 'A' ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </td>
+                        <td class="px-2 md:px-4 py-2 md:py-3 rounded-r-lg">
+                            <div class="flex justify-center space-x-2">
+                                <button 
+                                    *ngIf="item.status === 'A'"
+                                    (click)="openFormConsumption(item)"
+                                    class="text-blue-500 hover:text-blue-700 p-1 rounded-full hover:bg-blue-50"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button 
+                                    (click)="toggleConsumptionState(item.id_consumption, item.status)"
+                                    class="p-1 rounded-full"
+                                    [class.text-red-500]="item.status === 'A'"
+                                    [class.text-green-500]="item.status !== 'A'"
+                                    [class.hover:text-red-700]="item.status === 'A'"
+                                    [class.hover:text-green-700]="item.status !== 'A'"
+                                    [class.hover:bg-red-50]="item.status === 'A'"
+                                    [class.hover:bg-green-50]="item.status !== 'A'"
+                                >
+                                    <i class="fas" [class.fa-times]="item.status === 'A'" [class.fa-check]="item.status !== 'A'"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="filteredConsumption.length === 0">
+                        <td colspan="9" class="py-8 text-center text-gray-500">
+                            <i class="fas fa-database text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-lg font-medium text-gray-700">No se encontraron registros</p>
+                            <p class="text-sm text-gray-500 mb-4">No hay consumos que coincidan con tu búsqueda</p>
+                        </td>
+                    </tr>
+                </tbody>            
+            </table>
+
+            <!-- Paginación -->
+            <div *ngIf="filteredConsumption.length > 0" class="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 rounded-lg">
+                <div class="text-sm text-gray-600">
+                    Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
+                    {{ Math.min(currentPage * itemsPerPage, filteredConsumption.length) }}
+                    de {{ filteredConsumption.length }} registros
+                </div>
+                <div class="flex space-x-1">
+                    <button 
+                        (click)="currentPage = 1" 
+                        [disabled]="currentPage === 1"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    <button 
+                        (click)="currentPage = currentPage - 1" 
+                        [disabled]="currentPage === 1"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                    <div class="flex space-x-1">
+                        <button 
+                            *ngFor="let page of getPageNumbers()" 
+                            (click)="currentPage = page"
+                            [class.bg-blue-600]="currentPage === page"
+                            [class.text-white]="currentPage === page"
+                            [class.hover:bg-blue-700]="currentPage === page"
+                            [class.hover:bg-gray-100]="currentPage !== page"
+                            class="px-3 py-1 border rounded-md text-sm font-medium"
+                        >
+                            {{ page }}
+                        </button>
+                    </div>
+                    <button 
+                        (click)="currentPage = currentPage + 1" 
+                        [disabled]="currentPage === getTotalPages()"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                    <button 
+                        (click)="currentPage = getTotalPages()" 
+                        [disabled]="currentPage === getTotalPages()"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="mr-2">Registros por página:</span>
+                    <select 
+                        [(ngModel)]="itemsPerPage" 
+                        (change)="currentPage = 1"
+                        class="px-2 py-1 border rounded-md text-sm"
+                    >
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista de tarjetas para móviles -->
+        <div class="md:hidden space-y-4">
+            <div *ngFor="let item of getPaginatedItems()" class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-blue-900 flex items-center">
+                        <i class="fas fa-egg text-blue-500 mr-2"></i> Consumo Interno
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button 
+                            *ngIf="item.status === 'A'"
+                            (click)="openFormConsumption(item)"
+                            class="text-blue-500 hover:text-blue-700 p-1 rounded-full hover:bg-blue-50"
+                        >
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button 
+                            (click)="toggleConsumptionState(item.id_consumption, item.status)"
+                            class="p-1 rounded-full"
+                            [class.text-red-500]="item.status === 'A'"
+                            [class.text-green-500]="item.status !== 'A'"
+                            [class.hover:text-red-700]="item.status === 'A'"
+                            [class.hover:text-green-700]="item.status !== 'A'"
+                            [class.hover:bg-red-50]="item.status === 'A'"
+                            [class.hover:bg-green-50]="item.status !== 'A'"
+                        >
+                            <i class="fas" [class.fa-times]="item.status === 'A'" [class.fa-check]="item.status !== 'A'"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-calendar-day text-blue-500 mr-1"></i> Fecha:
+                        </p>
+                        <p>{{ formatDate(item.date) }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-home text-blue-500 mr-1"></i> Casa:
+                        </p>
+                        <p>{{ item.names }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-egg text-blue-500 mr-1"></i> Tipo:
+                        </p>
+                        <p>{{ item.productType || 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-boxes text-blue-500 mr-1"></i> Cantidad:
+                        </p>
+                        <p>{{ item.quantity }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-weight-hanging text-blue-500 mr-1"></i> Peso:
+                        </p>
+                        <p>{{ item.weight.toFixed(2) }} kg</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-tag text-blue-500 mr-1"></i> Precio:
+                        </p>
+                        <p>S/. {{ item.price.toFixed(2) }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-money-bill-wave text-blue-500 mr-1"></i> Valor:
+                        </p>
+                        <p>S/. {{ item.salevalue.toFixed(2) }}</p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-circle text-blue-500 mr-1"></i> Estado:
+                        </p>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium" 
+                            [class.bg-green-100]="item.status === 'A'" 
+                            [class.text-green-600]="item.status === 'A'"
+                            [class.bg-red-100]="item.status !== 'A'"
+                            [class.text-red-600]="item.status !== 'A'">
+                            {{ item.status === 'A' ? 'Activo' : 'Inactivo' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paginación para móviles -->
+            <div *ngIf="filteredConsumption.length > 0" class="flex flex-col items-center mt-4 px-4 py-2 bg-gray-50 rounded-lg">
+                <div class="text-sm text-gray-600 mb-2">
+                    Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
+                    {{ Math.min(currentPage * itemsPerPage, filteredConsumption.length) }}
+                    de {{ filteredConsumption.length }} registros
+                </div>
+                <div class="flex space-x-2">
+                    <button 
+                        (click)="currentPage = 1" 
+                        [disabled]="currentPage === 1"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    <button 
+                        (click)="currentPage = currentPage - 1" 
+                        [disabled]="currentPage === 1"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                    <select 
+                        [(ngModel)]="currentPage" 
+                        class="px-2 py-1 border rounded-md text-sm text-center"
+                    >
+                        <option *ngFor="let page of getPageNumbers()" [value]="page">{{ page }}</option>
+                    </select>
+                    <button 
+                        (click)="currentPage = currentPage + 1" 
+                        [disabled]="currentPage === getTotalPages()"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                    <button 
+                        (click)="currentPage = getTotalPages()" 
+                        [disabled]="currentPage === getTotalPages()"
+                        class="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-gray-100"
+                    >
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </div>
+                <div class="mt-2 text-sm text-gray-600 flex items-center">
+                    <span class="mr-2">Registros por página:</span>
+                    <select 
+                        [(ngModel)]="itemsPerPage" 
+                        (change)="currentPage = 1"
+                        class="px-2 py-1 border rounded-md text-sm"
+                    >
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+            </div>
+
+            <div *ngIf="filteredConsumption.length === 0" class="text-center py-8">
+                <i class="fas fa-database text-4xl text-gray-400 mb-2"></i>
+                <p class="text-lg font-medium text-gray-700">No se encontraron registros</p>
+                <p class="text-sm text-gray-500 mb-4">No hay consumos que coincidan con tu búsqueda</p>
+                <button 
+                    (click)="openFormConsumption()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    <i class="fas fa-plus mr-2"></i>Agregar nuevo consumo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diálogo Modal -->
+    <div *ngIf="showDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 md:p-0">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-xl mx-2 md:mx-auto overflow-auto max-h-screen">
+            <!-- Encabezado del Modal -->
+            <div class="bg-blue-100 p-4 rounded-t-lg sticky top-0 z-10">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg md:text-xl font-bold text-blue-900">
+                        <i class="fas fa-egg mr-2"></i>
+                        {{ selectedConsumption ? 'Editar Consumo' : 'Agregar Nuevo Consumo' }}
+                    </h3>
+                    <button class="text-gray-600 hover:text-gray-800 p-1 rounded-full hover:bg-blue-200" (click)="closeDialog()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cuerpo del Modal -->
+            <div class="p-4 md:p-6">
+                <app-form-consumption 
+                    [consumptionData]="selectedConsumption"
+                    (onClose)="handleDialogResult($event)"
+                ></app-form-consumption>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO: Diálogo de Historial -->
+    <div *ngIf="showHistoryDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 md:p-0">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl mx-2 md:mx-auto overflow-auto max-h-screen">
+            <!-- Encabezado del Modal de Historial -->
+            <div class="bg-indigo-100 p-4 rounded-t-lg sticky top-0 z-10">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg md:text-xl font-bold text-indigo-900">
+                        <i class="fas fa-history mr-2"></i>
+                        Historial de Cambios
+                    </h3>
+                    <button class="text-gray-600 hover:text-gray-800 p-1 rounded-full hover:bg-indigo-200" (click)="closeHistoryDialog()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cuerpo del Modal de Historial -->
+            <div class="p-4 md:p-6">
+                <!-- Filtros del Historial -->
+                <div class="mb-6 space-y-4">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Buscar en historial</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    [(ngModel)]="historySearchTerm"
+                                    placeholder="Buscar por detalles, usuario o ID..."
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                            </div>
+                        </div>
+                        <div class="w-full md:w-48">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por acción</label>
+                            <select 
+                                [(ngModel)]="historyFilterAction"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="all">Todas las acciones</option>
+                                <option value="creación">Creación</option>
+                                <option value="modificación">Modificación</option>
+                                <option value="eliminación">Eliminación</option>
+                                <option value="activación">Activación</option>
+                                <option value="desactivación">Desactivación</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Historial -->
+                <div class="space-y-3 max-h-96 overflow-y-auto">
+                    <div *ngFor="let entry of getFilteredHistoryData()" class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium"
+                                        [class.bg-green-100]="entry.action === 'Creación'"
+                                        [class.text-green-600]="entry.action === 'Creación'"
+                                        [class.bg-blue-100]="entry.action === 'Modificación'"
+                                        [class.text-blue-600]="entry.action === 'Modificación'"
+                                        [class.bg-red-100]="entry.action === 'Desactivación' || entry.action === 'Eliminación'"
+                                        [class.text-red-600]="entry.action === 'Desactivación' || entry.action === 'Eliminación'"
+                                        [class.bg-yellow-100]="entry.action === 'Activación'"
+                                        [class.text-yellow-600]="entry.action === 'Activación'"
+                                    >
+                                        {{ entry.action }}
+                                    </span>
+                                    <span class="text-sm text-gray-500">ID Consumo: {{ entry.consumptionId }}</span>
+                                </div>
+                                <p class="text-sm text-gray-700 mb-1">{{ entry.details }}</p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-user mr-1"></i>
+                                        {{ entry.user }}
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        {{ formatHistoryDate(entry.date) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="getFilteredHistoryData().length === 0" class="text-center py-8">
+                        <i class="fas fa-history text-4xl text-gray-400 mb-2"></i>
+                        <p class="text-lg font-medium text-gray-700">No hay historial disponible</p>
+                        <p class="text-sm text-gray-500">Los cambios aparecerán aquí cuando se realicen modificaciones</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO: Diálogo de Reporte -->
+    <div *ngIf="showReportDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 md:p-0">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-7xl mx-2 md:mx-auto overflow-auto max-h-screen">
+            <!-- Encabezado del Modal de Reporte -->
+            <div class="bg-green-100 p-4 rounded-t-lg sticky top-0 z-10">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg md:text-xl font-bold text-green-900">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Reporte de Análisis
+                    </h3>
+                    <button class="text-gray-600 hover:text-gray-800 p-1 rounded-full hover:bg-green-200" (click)="closeReportDialog()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cuerpo del Modal de Reporte -->
+            <div class="p-4 md:p-6">
+                <!-- Pestañas del Reporte -->
+                <div class="mb-6">
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8">
+                            <button 
+                                (click)="setActiveReportTab('summary')"
+                                [class.border-green-500]="activeReportTab === 'summary'"
+                                [class.text-green-600]="activeReportTab === 'summary'"
+                                [class.border-transparent]="activeReportTab !== 'summary'"
+                                [class.text-gray-500]="activeReportTab !== 'summary'"
+                                class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300"
+                            >
+                                Resumen
+                            </button>
+                            <button 
+                                (click)="setActiveReportTab('trends')"
+                                [class.border-green-500]="activeReportTab === 'trends'"
+                                [class.text-green-600]="activeReportTab === 'trends'"
+                                [class.border-transparent]="activeReportTab !== 'trends'"
+                                [class.text-gray-500]="activeReportTab !== 'trends'"
+                                class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300"
+                            >
+                                Tendencias
+                            </button>
+                            <button 
+                                (click)="setActiveReportTab('homes')"
+                                [class.border-green-500]="activeReportTab === 'homes'"
+                                [class.text-green-600]="activeReportTab === 'homes'"
+                                [class.border-transparent]="activeReportTab !== 'homes'"
+                                [class.text-gray-500]="activeReportTab !== 'homes'"
+                                class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300"
+                            >
+                                Por Hogar
+                            </button>
+                            <button 
+                                (click)="setActiveReportTab('products')"
+                                [class.border-green-500]="activeReportTab === 'products'"
+                                [class.text-green-600]="activeReportTab === 'products'"
+                                [class.border-transparent]="activeReportTab !== 'products'"
+                                [class.text-gray-500]="activeReportTab !== 'products'"
+                                class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300"
+                            >
+                                Por Producto
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Contenido de las Pestañas -->
+                <div [ngSwitch]="activeReportTab">
+                    <!-- Pestaña Resumen -->
+                    <div *ngSwitchCase="'summary'" class="space-y-6">
+                        <!-- Métricas Principales -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-blue-100 rounded-full mr-4">
+                                        <i class="fas fa-boxes text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-500">Total Consumos</h3>
+                                        <p class="text-2xl font-bold text-gray-800">{{ reportData?.totalConsumptions || 0 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-green-100 rounded-full mr-4">
+                                        <i class="fas fa-money-bill-wave text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-500">Valor Total</h3>
+                                        <p class="text-2xl font-bold text-gray-800">S/. {{ getTotalValue() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-yellow-100 rounded-full mr-4">
+                                        <i class="fas fa-weight-hanging text-yellow-600"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-500">Peso Promedio</h3>
+                                        <p class="text-2xl font-bold text-gray-800">{{ getAverageWeight() }} kg</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-purple-100 rounded-full mr-4">
+                                        <i class="fas fa-home text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-500">Hogares Activos</h3>
+                                        <p class="text-2xl font-bold text-gray-800">{{ getTopHomesLength() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configuración de Reporte -->
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-cog mr-2"></i>
+                                Configuración de Reporte
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                                    <input 
+                                        type="date" 
+                                        [(ngModel)]="reportDateRange.start"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    >
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+                                    <input 
+                                        type="date" 
+                                        [(ngModel)]="reportDateRange.end"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    >
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button 
+                                    (click)="generateCustomReport()"
+                                    class="flex-1 flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                >
+                                    <i class="fas fa-chart-bar mr-2"></i>
+                                    Generar Reporte
+                                </button>
+                                <button 
+                                    (click)="exportReportToPDF()"
+                                    class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    <i class="fas fa-file-pdf mr-2"></i>
+                                    Exportar PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Tendencias -->
+                    <div *ngSwitchCase="'trends'" class="space-y-4">
+                        <div class="bg-white p-6 rounded-lg border border-gray-200">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                Tendencia Mensual
+                            </h4>
+                            <div class="space-y-4">
+                                <div *ngFor="let item of reportData?.monthlyTrend" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium">{{ item.month }}</p>
+                                        <p class="text-sm text-gray-500">{{ item.count }} consumos</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold">S/. {{ item.value.toFixed(2) }}</p>
+                                    </div>
+                                </div>
+                                <div *ngIf="hasMonthlyTrend()" class="text-center py-8">
+                                    <i class="fas fa-chart-line text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-lg font-medium text-gray-700">No hay datos de tendencias</p>
+                                    <p class="text-sm text-gray-500">Los datos aparecerán cuando haya consumos registrados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Por Hogar -->
+                    <div *ngSwitchCase="'homes'" class="space-y-4">
+                        <div class="bg-white p-6 rounded-lg border border-gray-200">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-home mr-2"></i>
+                                Top Hogares por Consumo
+                            </h4>
+                            <div class="space-y-4">
+                                <div *ngFor="let home of reportData?.topHomes; let i = index" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-sm font-bold text-blue-600">{{ i + 1 }}</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">{{ home.name }}</p>
+                                            <p class="text-sm text-gray-500">{{ home.count }} unidades</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold">S/. {{ home.value.toFixed(2) }}</p>
+                                    </div>
+                                </div>
+                                <div *ngIf="hasTopHomes()" class="text-center py-8">
+                                    <i class="fas fa-home text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-lg font-medium text-gray-700">No hay datos de hogares</p>
+                                    <p class="text-sm text-gray-500">Los datos aparecerán cuando haya consumos registrados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Por Producto -->
+                    <div *ngSwitchCase="'products'" class="space-y-4">
+                        <div class="bg-white p-6 rounded-lg border border-gray-200">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-egg mr-2"></i>
+                                Análisis por Tipo de Producto
+                            </h4>
+                            <div class="space-y-4">
+                                <div *ngFor="let product of reportData?.productStats" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium">{{ product.type }}</p>
+                                        <p class="text-sm text-gray-500">{{ product.count }} unidades</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold">S/. {{ product.value.toFixed(2) }}</p>
+                                    </div>
+                                </div>
+                                <div *ngIf="hasProductStats()" class="text-center py-8">
+                                    <i class="fas fa-egg text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-lg font-medium text-gray-700">No hay datos de productos</p>
+                                    <p class="text-sm text-gray-500">Los datos aparecerán cuando haya consumos registrados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

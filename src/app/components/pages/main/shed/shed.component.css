@@ -1,0 +1,65 @@
+/* Estilos adicionales para mejorar la experiencia responsive */
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 767px) {
+    /* Tarjetas en vista móvil */
+    .mobile-card {
+      transition: transform 0.2s ease;
+    }
+    
+    .mobile-card:active {
+      transform: scale(0.98);
+    }
+    
+    /* Ajustes para el modal en móviles */
+    .modal-content-mobile {
+      max-height: 85vh;
+    }
+  }
+  
+  /* Animaciones generales */
+  .fade-in {
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Mejoras de accesibilidad */
+  button:focus, input:focus, select:focus, textarea:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  
+  /* Mejoras para scrolling en tablas */
+  .table-container {
+    -webkit-overflow-scrolling: touch; /* Para scroll suave en iOS */
+  }
+  
+  /* Mejora visual para estados activo/inactivo */
+  .status-indicator {
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Mejoras para botones tactiles */
+  .action-button {
+    min-height: 44px; /* Altura mínima recomendada para elementos táctiles */
+  }
+  
+  /* Ocultar scrollbar pero permitir scroll */
+  .clean-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  .clean-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  
+  /* Transiciones suaves para interacciones */
+  .hover-transition {
+    transition: all 0.2s ease;
+  }

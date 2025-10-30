@@ -1,0 +1,328 @@
+<!-- Modal overlay - Pantalla completa -->
+<div *ngIf="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+  <!-- Modal container - Se ajusta a la pantalla -->
+  <div class="relative bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[95vh] flex flex-col">
+    <!-- Header - Más compacto -->
+    <div class="bg-blue-600 py-2 px-3 sm:px-6 border-b border-gray-300 flex-shrink-0">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm sm:text-lg font-bold text-white">
+          <span *ngIf="mode === 'create'">Nueva Venta</span>
+          <span *ngIf="mode === 'edit'">Editar Venta</span>
+          <span *ngIf="mode === 'view'">Detalles de Venta</span>
+        </h2>
+        <button (click)="handleClose()" class="text-white hover:text-white p-1">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+      <div class="text-center mt-1 text-white">
+          <h1 class="text-sm sm:text-lg font-bold uppercase">BOLETA DE VENTA</h1>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="errorMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mx-2 sm:mx-3 mt-2 rounded text-xs sm:text-sm flex-shrink-0">
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="text-center py-2 flex-shrink-0">
+      <div class="inline-block animate-spin rounded-full h-4 w-4 sm:h-6 sm:w-6 border-t-2 border-b-2 border-blue-500"></div>
+      <p class="text-xs sm:text-sm text-gray-600 mt-1">Procesando...</p>
+    </div>
+
+    <!-- Form with controlled height and scrolling -->
+    <div class="flex-1 overflow-hidden flex flex-col min-h-0 max-h-[calc(95vh-4rem)]">
+      <form [formGroup]="saleForm" (submit)="onSubmit()" class="flex-1 flex flex-col overflow-auto">
+        <!-- Fixed content section - Información del cliente y configuración -->
+        <div class="flex-shrink-0 p-2 sm:p-3 pb-1 border-b border-gray-200">
+          <div class="space-y-2">
+            <!-- Date field above client section -->
+            <div class="mb-1">
+              <label class="block text-xs font-medium text-gray-700 mb-1">Fecha</label>
+              <input 
+                type="text" 
+                [value]="saleForm.get('saleDate')?.value | date: 'dd-MMM-yyyy':'':'es'" 
+                class="w-full p-1 border rounded-md bg-gray-100 text-xs cursor-not-allowed" 
+                readonly
+              >
+            </div>
+            
+            <!-- Cliente section -->
+            <div class="bg-gray-50 p-2 sm:p-3 rounded-lg border border-gray-200">
+              <h3 class="font-bold text-gray-700 mb-2 text-xs sm:text-sm">Datos del Cliente</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-0.5">RUC/DNI</label>
+                  <div class="relative">
+                    <input 
+                      type="text" 
+                      formControlName="ruc" 
+                      class="w-full p-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-xs"
+                      placeholder="Ingrese RUC o DNI"
+                    >
+                    <div *ngIf="isSearchingDocument" class="absolute right-2 top-1/2 transform -translate-y-1/2">
+                      <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-500"></div>
+                    </div>
+                  </div>
+                  <div *ngIf="saleForm.get('ruc')?.touched && saleForm.get('ruc')?.invalid && mode !== 'view'" class="text-red-500 text-xs mt-0.5">
+                    {{ getFieldError('ruc') }}
+                  </div>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-medium text-gray-700 mb-0.5">Nombre/Razón Social</label>
+                  <input 
+                    type="text" 
+                    formControlName="name" 
+                    class="w-full p-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-xs"
+                    placeholder="Nombre del cliente"
+                  >
+                  <div *ngIf="saleForm.get('name')?.touched && saleForm.get('name')?.invalid && mode !== 'view'" class="text-red-500 text-xs mt-0.5">
+                    {{ getFieldError('name') }}
+                  </div>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-medium text-gray-700 mb-0.5">Dirección</label>
+                  <input 
+                    type="text" 
+                    formControlName="address" 
+                    class="w-full p-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-xs"
+                    placeholder="Dirección del cliente"
+                  >
+                  <div *ngIf="saleForm.get('address')?.touched && saleForm.get('address')?.invalid && mode !== 'view'" class="text-red-500 text-xs mt-0.5">
+                    {{ getFieldError('address') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stock summary and price section -->
+            <div class="bg-gray-50 p-2 sm:p-3 rounded-lg border border-gray-200">
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                <h3 class="font-bold text-gray-700 text-xs sm:text-sm">Configuración de Venta</h3>
+                <div class="text-xs text-green-700 bg-green-50 border border-green-200 rounded-md px-2 py-1">
+                  <i class="fas fa-boxes mr-1"></i>
+                  <span class="font-semibold">Stock Total:</span> {{ getTotalStock() }} paquetes
+                </div>
+              </div>
+
+              <!-- Precio por kg global -->
+              <div class="bg-white p-2 rounded-lg border border-gray-200">
+                <label class="block text-xs font-medium text-gray-700 mb-1">
+                  <i class="fas fa-dollar-sign text-green-600 mr-1"></i>
+                  Precio por Kg (S/)
+                </label>
+                <input 
+                  type="number"
+                  step="0.01"
+                  formControlName="pricePerKg"
+                  (input)="calculateTotals()"
+                  class="w-24 p-1 border rounded-md focus:ring-blue-500 focus:border-blue-500 text-xs font-semibold"
+                  placeholder="0.00"
+                  [readonly]="mode === 'view'"
+                >
+                <div *ngIf="saleForm.get('pricePerKg')?.touched && saleForm.get('pricePerKg')?.invalid && mode !== 'view'" class="text-red-500 text-xs mt-1">
+                  {{ getFieldError('pricePerKg') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN DE PRODUCTOS CON SCROLL FUNCIONAL - VERSIÓN MÁS SIMPLE -->
+        <div class="p-2 sm:p-3" style="height: 400px;">
+          <!-- Header de la lista de productos -->
+          <div class="mb-2">
+            <div class="flex items-center justify-between bg-blue-50 p-2 rounded-lg border border-blue-200">
+              <h4 class="font-semibold text-blue-800 text-xs sm:text-sm flex items-center">
+                <i class="fas fa-list mr-2"></i>
+                Lista de Productos
+              </h4>
+              <div class="text-xs text-blue-600 bg-white px-2 py-1 rounded border">
+                Disponibles: {{ allProductsInStock.length }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenedor scrollable SIMPLE -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg overflow-y-auto" style="height: 340px;">
+            <div class="p-2 space-y-2">
+              <!-- Lista de productos -->
+              <div *ngIf="allProductsInStock.length > 0">
+                <div *ngFor="let product of allProductsInStock; trackBy: trackByProductId" 
+                     class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                  
+                  <!-- Product header -->
+                  <div class="p-2 border-b border-gray-100">
+                    <div class="flex justify-between items-start">
+                      <div class="flex-1">
+                        <div class="flex items-center mb-1">
+                          <h4 class="font-semibold text-gray-800 text-xs">{{ product.type }}</h4>
+                          <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                            {{ product.packageWeight }} kg
+                          </span>
+                        </div>
+                        <p class="text-xs text-gray-600">{{ product.description }}</p>
+                        <div class="flex items-center mt-1 text-xs text-gray-500">
+                          <i class="fas fa-warehouse mr-1"></i>
+                          <span>Stock: {{ getProductStock(product.id) }} paquetes</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quantity controls -->
+                  <div class="p-2 bg-gray-50">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-2">
+                        <!-- Decrease button -->
+                        <button 
+                          type="button"
+                          (click)="decreaseProductQuantity(product.id)"
+                          [disabled]="getProductQuantity(product.id) === 0 || mode === 'view'"
+                          class="w-6 h-6 rounded-full bg-red-500 text-white hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center transition-colors duration-200"
+                        >
+                          <i class="fas fa-minus text-xs"></i>
+                        </button>
+
+                        <!-- Quantity display -->
+                        <div class="text-center min-w-[50px]">
+                          <div class="text-sm font-bold text-gray-800">{{ getProductQuantity(product.id) }}</div>
+                          <div class="text-xs text-gray-500">paquetes</div>
+                        </div>
+
+                        <!-- Increase button -->
+                        <button 
+                          type="button"
+                          (click)="increaseProductQuantity(product.id)"
+                          [disabled]="getProductQuantity(product.id) >= getProductStock(product.id) || mode === 'view'"
+                          class="w-6 h-6 rounded-full bg-green-500 text-white hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center transition-colors duration-200"
+                        >
+                          <i class="fas fa-plus text-xs"></i>
+                        </button>
+                      </div>
+
+                      <!-- Product totals (shown only when quantity > 0) -->
+                      <div *ngIf="getProductQuantity(product.id) > 0" class="text-right">
+                        <div class="text-xs font-semibold text-blue-600">
+                          {{ getProductTotalWeight(product.id) }} kg
+                        </div>
+                        <div class="text-xs text-gray-500" *ngIf="saleForm.get('pricePerKg')?.value">
+                          S/ {{ getProductTotalPrice(product.id) }}
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Quick add buttons -->
+                    <div *ngIf="getProductQuantity(product.id) === 0 && mode !== 'view'" class="mt-2 flex space-x-1">
+                      <button 
+                        type="button"
+                        *ngFor="let qty of [1, 2, 3, 5]; let i = index"
+                        [disabled]="qty > getProductStock(product.id)"
+                        (click)="setProductQuantity(product.id, qty)"
+                        class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                      >
+                        +{{ qty }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No products available -->
+              <div *ngIf="allProductsInStock.length === 0" 
+                   class="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800 text-sm text-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                No hay productos disponibles en stock.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer section with summary and buttons - SIEMPRE VISIBLE -->
+        <div class="flex-shrink-0 p-2 sm:p-3 pt-2 border-t border-gray-200 bg-white">
+          <!-- Selected products summary -->
+          <div *ngIf="getTotalSelectedProducts() > 0" class="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 class="font-semibold text-blue-800 mb-2 text-xs flex items-center">
+              <i class="fas fa-shopping-cart mr-2"></i>
+              Resumen de Productos Seleccionados
+            </h4>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+              <div class="bg-white p-2 rounded border">
+                <div class="text-gray-600 text-xs">Total Paquetes</div>
+                <div class="text-lg font-bold text-blue-600">{{ getTotalSelectedProducts() }}</div>
+              </div>
+              <div class="bg-white p-2 rounded border">
+                <div class="text-gray-600 text-xs">Peso Total</div>
+                <div class="text-lg font-bold text-green-600">{{ getTotalSelectedWeight() }} kg</div>
+              </div>
+              <div class="bg-white p-2 rounded border">
+                <div class="text-gray-600 text-xs">Precio/Kg</div>
+                <div class="text-lg font-bold text-orange-600">S/ {{ saleForm.get('pricePerKg')?.value || '0.00' }}</div>
+              </div>
+              <div class="bg-white p-2 rounded border">
+                <div class="text-gray-600 text-xs">Total a Pagar</div>
+                <div class="text-lg font-bold text-red-600">S/ {{ saleForm.get('totalPrice')?.value || '0.00' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden total price input for form -->
+          <input type="hidden" formControlName="totalPrice">
+
+          <!-- Footer with grand total -->
+          <div class="mb-4 pt-4 border-t-2 border-gray-300">
+            <div class="flex justify-between items-center">
+              <div class="text-sm text-gray-600">
+                <span *ngIf="getTotalSelectedProducts() > 0">
+                  {{ getTotalSelectedProducts() }} paquete(s) • {{ getTotalSelectedWeight() }} kg
+                </span>
+                <span *ngIf="getTotalSelectedProducts() === 0" class="text-gray-400">
+                  No hay productos seleccionados
+                </span>
+              </div>
+              <div class="text-right">
+                <div class="text-2xl font-bold text-green-600">
+                  TOTAL: S/ {{ saleForm.get('totalPrice')?.value || '0.00' }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div *ngIf="mode !== 'view'" class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <button 
+              type="button" 
+              (click)="handleClose()" 
+              class="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              [disabled]="saleForm.invalid || isLoading || getTotalSelectedProducts() === 0" 
+              class="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold"
+            >
+              <i class="fas fa-save mr-2"></i>
+              {{ mode === 'create' ? 'Guardar Venta' : 'Actualizar Venta' }}
+            </button>
+          </div>
+          
+          <!-- View mode close button -->
+          <div *ngIf="mode === 'view'" class="flex justify-center">
+            <button 
+              type="button" 
+              (click)="handleClose()" 
+              class="px-8 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <i class="fas fa-times mr-2"></i>
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

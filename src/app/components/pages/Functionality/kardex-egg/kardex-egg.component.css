@@ -1,0 +1,485 @@
+/* Ultra Responsive Commercial Theme Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-bounceIn {
+  animation: bounceIn 0.6s ease-out;
+}
+
+/* Ultra Responsive Commercial Card Effects */
+.commercial-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.commercial-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.commercial-card:hover::before {
+  left: 100%;
+}
+
+.commercial-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Ultra Responsive Sales Metrics Animation */
+.sales-metric {
+  transition: all 0.3s ease;
+}
+
+.sales-metric:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Ultra Responsive Commercial Button Effects */
+.commercial-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.commercial-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.commercial-btn:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Enhanced Responsive Table Styling for Sales */
+.sales-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sales-table th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(10px);
+}
+
+.sales-table tr {
+  transition: all 0.2s ease;
+}
+
+.sales-table tr:hover {
+  transform: scale(1.005);
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Ultra Responsive Commercial Scrollbar */
+.commercial-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+@media (min-width: 640px) {
+  .commercial-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.commercial-scroll::-webkit-scrollbar-track {
+  background: linear-gradient(90deg, #f1f5f9, #e2e8f0);
+  border-radius: 4px;
+}
+
+.commercial-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 4px;
+}
+
+.commercial-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #059669, #047857);
+}
+
+/* Ultra Responsive Loading States for Commercial Data */
+.loading-commercial {
+  background: linear-gradient(90deg, #f0f9ff 25%, #e0f2fe 50%, #f0f9ff 75%);
+  background-size: 200% 100%;
+  animation: shimmerCommercial 2s infinite;
+}
+
+@keyframes shimmerCommercial {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Ultra Responsive Focus States for Accessibility */
+.focus-commercial:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
+  border-color: #10b981;
+}
+
+@media (min-width: 640px) {
+  .focus-commercial:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5);
+  }
+}
+
+/* Ultra Responsive Commercial Modal Enhancements */
+.modal-commercial {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 640px) {
+  .modal-commercial {
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.modal-content-commercial {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ESTILOS ESPECÍFICOS PARA EL CALENDARIO - CORREGIDOS */
+.month-button {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid transparent;
+}
+
+.month-button:hover {
+  border-color: rgba(147, 51, 234, 0.3);
+}
+
+.month-button.selected {
+  border-color: rgba(147, 51, 234, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2);
+}
+
+.month-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.3);
+}
+
+.month-button:active {
+  transform: scale(0.98);
+}
+
+/* Animación para el mes seleccionado */
+.month-button.selected::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #8b5cf6, #3b82f6);
+  border-radius: inherit;
+  z-index: -1;
+  animation: selectedGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes selectedGlow {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
+/* Ultra Responsive Design Breakpoints */
+@media (max-width: 374px) {
+  /* Extra small phones */
+  .commercial-mobile-xs > * {
+    font-size: 0.75rem !important;
+    padding: 0.25rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Mobile devices */
+  .commercial-mobile-stack > * {
+    width: 100% !important;
+    margin-bottom: 0.75rem;
+  }
+  
+  .commercial-mobile-stack > *:last-child {
+    margin-bottom: 0;
+  }
+  
+  .commercial-card {
+    margin-bottom: 0.75rem;
+  }
+  
+  .commercial-text-mobile {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  /* Tablets */
+  .commercial-tablet-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Large tablets / Small laptops */
+  .commercial-desktop-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  /* Desktop */
+  .commercial-large-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1281px) {
+  /* Large desktop */
+  .commercial-xl-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Ultra Responsive Typography */
+.text-responsive-xs {
+  font-size: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .text-responsive-xs {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-xs {
+    font-size: 1rem;
+  }
+}
+
+.text-responsive-sm {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .text-responsive-sm {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-sm {
+    font-size: 1.125rem;
+  }
+}
+
+.text-responsive-base {
+  font-size: 1rem;
+}
+
+@media (min-width: 640px) {
+  .text-responsive-base {
+    font-size: 1.125rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-base {
+    font-size: 1.25rem;
+  }
+}
+
+/* Ultra Responsive Spacing */
+.spacing-responsive {
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .spacing-responsive {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .spacing-responsive {
+    padding: 1.5rem;
+  }
+}
+
+/* Ultra Responsive Commercial Performance Indicators */
+.performance-indicator {
+  transition: all 0.3s ease;
+  transform: scale(1);
+}
+
+.performance-indicator:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 640px) {
+  .performance-indicator:hover {
+    transform: scale(1.02);
+  }
+}
+
+.performance-high {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.performance-medium {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.performance-low {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+/* Ultra Responsive Commercial Colors */
+.text-commercial-primary {
+  color: #059669;
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .text-commercial-primary {
+    font-weight: 700;
+  }
+}
+
+.text-commercial-secondary {
+  color: #0891b2;
+  font-weight: 500;
+}
+
+@media (min-width: 640px) {
+  .text-commercial-secondary {
+    font-weight: 600;
+  }
+}
+
+.text-commercial-accent {
+  color: #7c3aed;
+  font-weight: 500;
+}
+
+@media (min-width: 640px) {
+  .text-commercial-accent {
+    font-weight: 600;
+  }
+}
+
+/* Ultra Responsive Touch Targets */
+@media (max-width: 640px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (min-width: 641px) {
+  .touch-target {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+/* Ultra Responsive Container Queries Support */
+@container (max-width: 400px) {
+  .container-responsive {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+}
+
+@container (min-width: 401px) and (max-width: 600px) {
+  .container-responsive {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+  }
+}
+
+@container (min-width: 601px) {
+  .container-responsive {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}

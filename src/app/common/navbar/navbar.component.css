@@ -1,0 +1,294 @@
+/* Estilos base para la navbar */
+nav {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 40; /* Un z-index base para la navbar */
+}
+
+/* Estilos para el menú de usuario - Z-INDEX MEJORADO */
+.group.relative {
+  position: relative;
+  z-index: 9999 !important; /* Valor extremadamente alto para superponer a todo */
+}
+
+/* Configuración del contenedor del menú desplegable */
+.relative.ml-auto {
+  position: relative;
+  z-index: 9999 !important; /* Mismo valor alto para asegurar consistencia */
+}
+
+/* Animaciones para el botón de perfil */
+.group .rounded-full {
+  transition: all 0.3s ease;
+  border-color: transparent;
+}
+
+.group:hover .rounded-full {
+  transform: scale(1.05);
+  border-color: #3b82f6; /* Azul de Tailwind */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* Menú desplegable - REFORZADO PARA SUPERPONERLO A TODO */
+.absolute.right-0.mt-2 {
+  z-index: 9999 !important; /* Z-index extremadamente alto */
+  position: absolute !important; /* Aseguramos position absolute */
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform-origin: top right;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  isolation: isolate; /* Crea un nuevo contexto de apilamiento */
+}
+
+/* Estilo para las opciones del menú */
+.py-1 a {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 10000 !important; /* Aseguramos que los elementos internos también tengan alto z-index */
+}
+
+.py-1 a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #3b82f6;
+  transition: width 0.3s ease;
+}
+
+.py-1 a:hover::after {
+  width: 100%;
+}
+
+/* Mejorar opciones del menú */
+.py-1 a:hover {
+  background-color: rgba(55, 65, 81, 0.9) !important; /* Gris más oscuro */
+  padding-left: 1.25rem; /* Pequeña indentación al hacer hover */
+}
+
+/* Estilos especiales para cerrar sesión */
+a.flex.w-full.items-center.space-x-3.px-4.py-2.text-sm.text-red-400:hover {
+  background-color: rgba(220, 38, 38, 0.15) !important; /* Rojo con opacidad */
+}
+
+/* Animación para el modal */
+.fixed.inset-0.z-50 {
+  animation: fadeIn 0.3s ease;
+  z-index: 9000 !important; /* Alto pero no tanto como el menú de usuario */
+}
+
+.bg-gray-800.border.border-gray-700 {
+  animation: slideIn 0.3s ease;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(75, 85, 99, 0.6);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* NUEVOS ESTILOS: Mejorar apariencia de avatar en menú desplegable */
+.p-4.border-b.border-gray-700 .rounded-full {
+  transition: all 0.3s ease;
+  border: 3px solid #4f46e5; /* Borde más grueso y colorido */
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2), 
+              0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+}
+
+.p-4.border-b.border-gray-700:hover .rounded-full {
+  border-color: #3b82f6;
+  transform: scale(1.08); /* Escala ligeramente mayor */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4),
+              0 8px 25px rgba(0, 0, 0, 0.4); /* Sombra más dramática */
+}
+
+/* NUEVO: Animación para la bolita de estado activo */
+@keyframes pulse-online {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+}
+
+/* CORREGIDO: Bolita de estado FUERA del contenedor de la imagen en el botón principal */
+/* Contenedor del botón de perfil necesita overflow visible */
+.relative.flex.items-center.justify-center {
+  overflow: visible !important;
+  z-index: 1; /* Contenedor por debajo de la bolita */
+}
+
+/* Posicionamos la bolita FUERA del contenedor de la imagen */
+.relative.flex.items-center.justify-center .absolute.bottom-0.right-0 {
+  animation: pulse-online 2s infinite;
+  background-color: #22c55e !important; /* Verde más vibrante */
+  box-shadow: 0 0 0 2px #1f2937; /* Borde del contenedor */
+  
+  /* CORREGIDO: Posicionamos fuera del contenedor */
+  right: -4px !important; /* Mueve hacia la derecha, fuera del contenedor */
+  bottom: -4px !important; /* Mueve hacia abajo, fuera del contenedor */
+  z-index: 10 !important; /* Asegura que esté por encima */
+}
+
+/* CORREGIDO: Contenedor de la imagen en el menú desplegable */
+.flex.items-center.justify-center.h-12.w-12 {
+  position: relative;
+  overflow: visible !important; /* Permite que la bolita salga del contenedor */
+  z-index: 1; /* Contenedor por debajo de la bolita */
+}
+
+/* CORREGIDO: Bolita de estado en el menú desplegable también FUERA */
+.flex.items-center.justify-center.h-12.w-12::after {
+  content: '';
+  position: absolute;
+  right: -4px; /* Fuera del contenedor hacia la derecha */
+  bottom: -4px; /* Fuera del contenedor hacia abajo */
+  width: 16px;
+  height: 16px;
+  background-color: #22c55e;
+  border: 3px solid #1f2937;
+  border-radius: 50%;
+  animation: pulse-online 2s infinite;
+  z-index: 999; /* Z-index alto para estar AL FRENTE */
+}
+
+/* Mejorar contraste de la imagen en el menú desplegable */
+.flex.items-center.justify-center.h-12.w-12 img {
+  filter: brightness(1.1) contrast(1.1) saturate(1.2); /* Mejorar visibilidad */
+  transition: filter 0.3s ease;
+  position: relative;
+  z-index: 1; /* Imagen por debajo de la bolita */
+}
+
+.flex.items-center.justify-center.h-12.w-12:hover img {
+  filter: brightness(1.2) contrast(1.2) saturate(1.3); /* Más brillo al hover */
+}
+
+/* Estilo para indicar elementos clickeables */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Estilo para el fondo del menú desplegable */
+.absolute.right-0.mt-2.w-64 {
+  background-color: rgba(31, 41, 55, 0.98); /* Fondo ligeramente transparente */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+/* Mejorar apariencia de botones en el modal */
+.flex.items-center.justify-center.space-x-3 button {
+  transition: all 0.2s ease;
+  transform: translateY(0);
+}
+
+.flex.items-center.justify-center.space-x-3 button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+/* Efecto al hacer clic en los botones */
+.flex.items-center.justify-center.space-x-3 button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* CORREGIDO: Animación adicional para la bolita cuando se hace hover */
+.relative.flex.items-center.justify-center:hover .absolute.bottom-0.right-0 {
+  animation: pulse-online 1s infinite; /* Animación más rápida en hover */
+}
+
+/* SOLUCIÓN ADICIONAL: Estilos para asegurar que el menú desplegable siempre esté visible */
+body {
+  position: relative; /* Establece un contexto para los z-index */
+}
+
+/* Estas reglas ayudan a que el menú desplegable se muestre correctamente */
+.userMenuContainer {
+  position: relative !important;
+  isolation: isolate !important;
+}
+
+button[class*="toggleUserMenu"] {
+  position: relative !important;
+  z-index: 9500 !important; /* Valor muy alto */
+}
+
+/* Si hay problemas específicos con algún elemento que cubre el menú, esta regla lo forzará */
+body * {
+  z-index: auto !important; /* Resetea todos los z-index */
+}
+
+/* Luego específicamente damos un z-index alto al menú de usuario */
+.group.relative, 
+.group.relative * {
+  z-index: 9999 !important;
+}
+
+/* CORREGIDO: Asegurar que el contenedor del botón permita overflow visible */
+.group.relative button {
+  overflow: visible !important; /* Permite que la bolita se muestre fuera */
+}
+
+/* NUEVO: Variante de animación más sutil para dispositivos que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes pulse-online {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  
+  .relative.flex.items-center.justify-center .absolute.bottom-0.right-0,
+  .flex.items-center.justify-center.h-12.w-12::after {
+    animation: pulse-online 3s infinite; /* Animación más lenta y sutil */
+  }
+}
+
+/* NUEVO: Estilos adicionales para mayor separación visual */
+.profile-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Asegurar que no haya conflictos de overflow en contenedores padre */
+.flex.items-center.space-x-2,
+.flex.items-center.space-x-3 {
+  overflow: visible !important;
+}
+
+/* Estilo específico para la sección de perfil en el menú desplegable */
+.p-4.border-b.border-gray-700 {
+  overflow: visible !important; /* Permite que la bolita se vea fuera */
+  position: relative;
+}

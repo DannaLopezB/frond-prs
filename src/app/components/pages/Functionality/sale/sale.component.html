@@ -1,0 +1,345 @@
+<!-- CONTENEDOR PRINCIPAL CON GRADIENTE DE FONDO -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  
+  <!-- ========== HEADER PRINCIPAL - TÍTULO Y DESCRIPCIÓN ========== -->
+  <div class="bg-white shadow-lg border-b-4 border-blue-600 mb-6">
+    <div class="container mx-auto px-4 py-6">
+      <!-- Título alineado a la izquierda -->
+      <div class="flex items-center">
+        <div class="bg-blue-600 p-3 rounded-lg mr-4 shadow-lg">
+          <i class="fas fa-chart-line text-white text-xl"></i>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-gray-800 mb-1">
+            Sistema de Gestión de Ventas
+          </h2>
+          <p class="text-gray-600 text-base">Administra y controla todas tus operaciones comerciales</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4">
+    
+    <!-- ========== PANEL DE ACCIONES Y FILTROS ========== -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
+      
+      <!-- Botones de acción principales -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
+        <!-- Botón Nueva Venta -->
+        <button 
+          (click)="openCreateModal()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 shadow-md hover:shadow-lg transition-all duration-300 font-semibold">
+          <i class="fas fa-plus text-sm"></i>
+          <span>Nueva Venta</span>
+        </button>
+        
+        <!-- Botón Exportar Reporte -->
+        <button 
+          (click)="generateSalesReportPDF()"
+          class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 shadow-md hover:shadow-lg transition-all duration-300 font-semibold"
+          title="Descargar reporte PDF de todas las ventas">
+          <i class="fas fa-file-pdf text-sm"></i>
+          <span>Exportar Reporte</span>
+        </button>
+      </div>
+
+      <!-- ========== SECCIÓN DE FILTROS ========== -->
+      <div class="border-t border-gray-200 pt-6">
+        
+        <!-- Filtro de búsqueda por cliente -->
+            <div class="mb-6">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Buscar Cliente</label>
+              <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-blue-600 text-sm"></i>
+                </div>
+                <input 
+                  type="text" 
+                  placeholder="Nombre del cliente..." 
+                  class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all duration-200 bg-gray-50 focus:bg-white" />
+              </div>
+            </div>
+
+        <!-- Filtro por rango de fechas -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          
+          <!-- Switch para activar/desactivar filtro de fechas -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+              <span class="mr-3 font-semibold text-gray-700">Filtrar por Rango de Fechas:</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  class="sr-only peer" 
+                  [(ngModel)]="dateFilterEnabled" 
+                  (change)="switchDateFilter()">
+                <div class="w-11 h-6 bg-gray-300 peer-focus:ring-4 peer-focus:ring-blue-600 rounded-full peer 
+                  peer-checked:bg-blue-600 
+                  after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+                  after:bg-white after:border after:rounded-full after:h-5 after:w-5 
+                  peer-checked:after:translate-x-5 after:transition-all">
+                </div>
+                <span class="ml-3 text-sm font-medium text-gray-700">
+                  {{ dateFilterEnabled ? 'Activado' : 'Desactivado' }}
+                </span>
+              </label>
+            </div>
+
+            <!-- Botón para limpiar filtros -->
+            <button 
+              *ngIf="dateFilterEnabled"
+              class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg text-sm flex items-center"
+              (click)="resetDateFilter()">
+              <i class="fas fa-eraser mr-2"></i> Limpiar
+            </button>
+          </div>
+
+          <!-- Opciones de rangos rápidos -->
+          <div *ngIf="dateFilterEnabled" class="mb-4">
+            <span class="block text-sm font-semibold text-gray-700 mb-2">Rangos Rápidos:</span>
+            <div class="flex flex-wrap gap-2">
+              <button 
+                *ngFor="let preset of [
+                  {code: 'today', label: 'Hoy'},
+                  {code: 'yesterday', label: 'Ayer'},
+                  {code: 'thisWeek', label: 'Esta Semana'},
+                  {code: 'thisMonth', label: 'Este Mes'},
+                  {code: 'lastMonth', label: 'Mes Pasado'},
+                  {code: 'last30Days', label: 'Últimos 30 días'}
+                ]"
+                class="px-3 py-1 bg-blue-600 bg-opacity-10 hover:bg-opacity-20 text-blue-600 text-sm rounded-lg transition font-medium"
+                (click)="setDateRangePreset(preset.code)">
+                {{ preset.label }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Inputs de fechas manuales -->
+          <div *ngIf="dateFilterEnabled" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-calendar-alt mr-1 text-[#2b15b6]"></i> Fecha Inicio
+              </label>
+              <input 
+                type="date" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#2b15b6] focus:border-[#2b15b6]"
+                [(ngModel)]="startDate"
+                (change)="handleDateChange()"
+                [max]="endDate || null">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-calendar-alt mr-1 text-[#2b15b6]"></i> Fecha Fin
+              </label>
+              <input 
+                type="date" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#2b15b6] focus:border-[#2b15b6]"
+                [(ngModel)]="endDate"
+                (change)="handleDateChange()"
+                [min]="startDate || null">
+            </div>
+          </div>
+
+          <!-- Resumen del rango seleccionado -->
+          <div *ngIf="dateFilterEnabled && getDateRangeText()" class="mt-3 p-3 bg-[#2b15b6] bg-opacity-10 border border-[#2b15b6] border-opacity-30 rounded-lg text-sm text-[#2b15b6]">
+            <i class="fas fa-info-circle mr-2"></i>
+            Mostrando ventas <strong>{{ getDateRangeText() }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LISTA DE VENTAS ========== -->
+    <div class="space-y-4">
+      <div *ngFor="let sale of paginatedSales; let i = index" 
+           class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden">
+        
+        <!-- Barra superior decorativa -->
+        <div class="h-1 bg-[#2b15b6]"></div>
+        
+        <!-- Contenido principal de cada venta -->
+        <div class="p-4">
+          
+          <!-- Header clickeable para expandir/contraer -->
+          <div class="flex items-center justify-between cursor-pointer" (click)="toggleSaleDetails(i)">
+            
+            <!-- Información del cliente -->
+            <div class="flex items-center space-x-4 flex-1">
+              <!-- Avatar del cliente -->
+              <div class="bg-[#2b15b6] p-2 rounded-lg shadow-sm">
+                <i class="fas fa-user text-white text-lg"></i>
+              </div>
+              
+              <!-- Datos del cliente -->
+              <div class="flex-1">
+                <div class="flex items-center space-x-3 mb-1">
+                  <h3 class="text-lg font-bold text-gray-800">{{ sale.name }}</h3>
+                  <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">
+                    RUC: {{ sale.ruc }}
+                  </span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600 space-x-4">
+                  <span class="flex items-center">
+                    <i class="fas fa-calendar mr-1 text-[#2b15b6]"></i>
+                    {{ sale.saleDate | date:'dd/MM/yyyy' }}
+                  </span>
+                  <span class="flex items-center">
+                    <i class="fas fa-map-marker-alt mr-1 text-[#2b15b6]"></i>
+                    {{ sale.address }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Total y botón expandir -->
+            <div class="flex items-center space-x-4">
+              <div class="text-right">
+                <div class="text-xs text-gray-500 font-medium">Total</div>
+                <div class="text-xl font-bold text-green-600">
+                  S/ {{ getTotalSaleAmount(sale.details) | number:'1.2-2' }}
+                </div>
+              </div>
+              
+              <!-- Botón expandir/contraer -->
+              <button class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                <i class="fas fa-chevron-down text-[#2b15b6]" 
+                   [style.transform]="sale.expanded ? 'rotate(180deg)' : 'rotate(0deg)'"
+                   style="transition: transform 0.3s ease"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ========== DETALLES EXPANDIBLES ========== -->
+          <div *ngIf="sale.expanded" class="mt-4 pt-4 border-t border-gray-200">
+            
+            <!-- Lista de productos vendidos -->
+            <div class="mb-4">
+              <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                <i class="fas fa-box mr-2 text-[#2b15b6]"></i>
+                Productos Vendidos
+              </h4>
+              
+              <!-- Grid compacto de productos -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <div *ngFor="let d of getGroupedDetails(sale.details)" 
+                     class="bg-gray-50 rounded-lg p-3 border-l-4 border-[#2b15b6]">
+                  
+                  <!-- Nombre del producto -->
+                  <h5 class="font-semibold text-gray-800 text-sm mb-2">
+                    {{ getProductNameById(d.productId) }}
+                  </h5>
+                  
+                  <!-- Información en grid compacto -->
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-white p-2 rounded">
+                      <span class="text-gray-500 block">Peso/Paq</span>
+                      <span class="font-semibold">{{ d.weight }} kg</span>
+                    </div>
+                    <div class="bg-white p-2 rounded">
+                      <span class="text-gray-500 block">Cantidad</span>
+                      <span class="font-semibold">{{ d.packages }} paq</span>
+                    </div>
+                    <div class="bg-white p-2 rounded">
+                      <span class="text-gray-500 block">Total Kg</span>
+                      <span class="font-semibold">{{ d.totalWeight }} kg</span>
+                    </div>
+                    <div class="bg-white p-2 rounded">
+                      <span class="text-gray-500 block">Precio/Kg</span>
+                      <span class="font-semibold text-green-600">S/ {{ d.pricePerKg | number:'1.2-2' }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Subtotal -->
+                  <div class="mt-2 bg-green-100 p-2 rounded text-center">
+                    <span class="text-xs text-green-700">Subtotal:</span>
+                    <span class="font-bold text-green-800 ml-1">
+                      S/ {{ d.totalWeight * d.pricePerKg | number:'1.2-2' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resumen total -->
+            <div class="bg-[#2b15b6] text-white p-4 rounded-lg mb-4">
+              <div class="text-center">
+                <div class="text-sm opacity-90 mb-1">Total de la Venta</div>
+                <div class="text-2xl font-bold">
+                  S/ {{ getTotalSaleAmount(sale.details) | number:'1.2-2' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== BOTONES DE ACCIÓN ========== -->
+            <div class="flex flex-wrap justify-center gap-2">
+              <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm flex items-center space-x-1" 
+                      (click)="openEditModal(sale)">
+                <i class="fas fa-edit"></i>
+                <span>Editar</span>
+              </button>
+              
+              <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm flex items-center space-x-1" 
+                      (click)="deleteSale(sale.id!)">
+                <i class="fas fa-trash"></i>
+                <span>Eliminar</span>
+              </button>
+              
+              <button class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-sm flex items-center space-x-1" 
+                      (click)="viewSaleDetails(sale.id!)">
+                <i class="fas fa-eye"></i>
+                <span>Detalles</span>
+              </button>
+              
+              <button class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm flex items-center space-x-1" 
+                      (click)="generateSalePDF(sale)">
+                <i class="fas fa-file-pdf"></i>
+                <span>PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MENSAJE CUANDO NO HAY VENTAS ========== -->
+    <div *ngIf="paginatedSales.length === 0" class="text-center py-12">
+      <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto">
+        <i class="fas fa-shopping-cart text-gray-400 text-5xl mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay ventas registradas</h3>
+        <p class="text-gray-500 mb-4">Comienza creando tu primera venta</p>
+        <button (click)="openCreateModal()" 
+                class="bg-[#2b15b6] hover:bg-[#1f0f8a] text-white px-6 py-3 rounded-lg font-semibold">
+          <i class="fas fa-plus mr-2"></i>
+          Nueva Venta
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== PAGINACIÓN ========== -->
+    <div class="flex justify-center mt-8 mb-6" *ngIf="paginatedSales.length > 0">
+      <div class="flex space-x-2">
+        <button class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="bg-[#2b15b6] text-white px-3 py-2 rounded-lg">1</button>
+        <button class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">2</button>
+        <button class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">3</button>
+        <button class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MODAL COMPONENT ========== -->
+  <app-model-sale
+    [isOpen]="isModalOpen"
+    [mode]="modalMode"
+    [saleData]="selectedSale"
+    (closeModal)="closeModal()"
+    (saleCreated)="handleSaleCreated($event)"
+    (saleUpdated)="handleSaleUpdated($event)">
+  </app-model-sale>
+</div>
+

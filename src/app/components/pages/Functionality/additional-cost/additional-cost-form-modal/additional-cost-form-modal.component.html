@@ -1,0 +1,195 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-opacity-20 bg-gray-500" *ngIf="isOpen">
+  <div class="relative w-full max-w-lg bg-white rounded-xl shadow-xl dark:bg-gray-800 transform transition-all duration-300 ease-in-out scale-100 opacity-100">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-5 border-b dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-t-xl">
+      <h3 class="text-xl font-semibold text-blue-700 dark:text-blue-400 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {{ formTitle }}
+      </h3>
+      <button 
+        type="button" 
+        class="text-gray-600 hover:text-gray-900 bg-transparent hover:bg-gray-200 rounded-lg text-sm p-2 ml-auto inline-flex items-center transition-all duration-200 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
+        (click)="close()">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form Body -->
+    <div class="p-6 bg-white dark:bg-gray-800 max-h-[80vh] overflow-y-auto">
+      <form [formGroup]="diaryForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- ID Venta -->
+          <div class="col-span-1">
+            <label for="idSale" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Venta
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <select 
+                id="idSale" 
+                formControlName="idSale"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200" 
+                [ngClass]="{'border-red-500 ring-1 ring-red-500': diaryForm.get('idSale')?.invalid && diaryForm.get('idSale')?.touched}">
+                <option [value]="0" disabled>Selecciona una venta</option>
+                <option *ngFor="let sale of sales" [value]="sale.id">
+                  <!-- {{ getSaleDisplayText(sale) }} -->
+                </option>
+              </select>
+            </div>
+            <p class="mt-1.5 text-xs text-red-500" *ngIf="diaryForm.get('idSale')?.invalid && diaryForm.get('idSale')?.touched">
+              Selecciona una venta
+            </p>
+          </div>
+
+          <!-- ID Alimento -->
+          <div class="col-span-1">
+            <label for="idFood" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Alimento
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <select 
+                id="idFood" 
+                formControlName="idFood"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200" 
+                [ngClass]="{'border-red-500 ring-1 ring-red-500': diaryForm.get('idFood')?.invalid && diaryForm.get('idFood')?.touched}">
+                <option [value]="0" disabled>Selecciona un alimento</option>
+                <option *ngFor="let food of foods" [value]="food.idFoodCosts">
+                  {{ getFoodDisplayText(food) }}
+                </option>
+              </select>
+            </div>
+            <p class="mt-1.5 text-xs text-red-500" *ngIf="diaryForm.get('idFood')?.invalid && diaryForm.get('idFood')?.touched">
+              Selecciona un alimento
+            </p>
+          </div>
+
+          <!-- Cuidado -->
+          <div class="col-span-1">
+            <label for="cuidado" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Cuidado
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <input 
+                type="number" 
+                id="cuidado" 
+                formControlName="cuidado"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200" 
+                placeholder="Costo de cuidado"
+                [ngClass]="{'border-red-500 ring-1 ring-red-500': diaryForm.get('cuidado')?.invalid && diaryForm.get('cuidado')?.touched}">
+            </div>
+            <p class="mt-1.5 text-xs text-red-500" *ngIf="diaryForm.get('cuidado')?.invalid && diaryForm.get('cuidado')?.touched">
+              Cuidado es requerido y debe ser mayor o igual a 0
+            </p>
+          </div>
+
+          <!-- Costo Adicional -->
+          <div class="col-span-1">
+            <label for="costoAdicional" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Costo Adicional
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <input 
+                type="number" 
+                id="costoAdicional" 
+                formControlName="costoAdicional"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200" 
+                placeholder="Costo adicional"
+                [ngClass]="{'border-red-500 ring-1 ring-red-500': diaryForm.get('costoAdicional')?.invalid && diaryForm.get('costoAdicional')?.touched}">
+            </div>
+            <p class="mt-1.5 text-xs text-red-500" *ngIf="diaryForm.get('costoAdicional')?.invalid && diaryForm.get('costoAdicional')?.touched">
+              Costo adicional es requerido y debe ser mayor o igual a 0
+            </p>
+          </div>
+
+          <!-- Ganancia Diaria -->
+          <div class="col-span-1">
+            <label for="gananciaDiaria" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Ganancia Diaria
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <input 
+                type="number" 
+                id="gananciaDiaria" 
+                formControlName="gananciaDiaria"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200" 
+                placeholder="Ganancia diaria"
+                [ngClass]="{'border-red-500 ring-1 ring-red-500': diaryForm.get('gananciaDiaria')?.invalid && diaryForm.get('gananciaDiaria')?.touched}">
+            </div>
+            <p class="mt-1.5 text-xs text-red-500" *ngIf="diaryForm.get('gananciaDiaria')?.invalid && diaryForm.get('gananciaDiaria')?.touched">
+              Ganancia diaria es requerida y debe ser mayor o igual a 0
+            </p>
+          </div>
+
+          <!-- Fecha -->
+          <div class="col-span-1">
+            <label for="fecha" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Fecha
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input 
+                type="date" 
+                id="fecha" 
+                formControlName="fecha"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200" 
+                [ngClass]="{'border-red-500 ring-1 ring-red-500': diaryForm.get('fecha')?.invalid && diaryForm.get('fecha')?.touched}">
+            </div>
+            <p class="mt-1.5 text-xs text-red-500" *ngIf="diaryForm.get('fecha')?.invalid && diaryForm.get('fecha')?.touched">
+              Fecha es requerida
+            </p>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-5 mt-2">
+          <button 
+            type="button" 
+            class="w-full sm:w-auto text-gray-700 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-300 text-sm font-medium px-6 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600 transition-all duration-200"
+            (click)="close()">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="w-full sm:w-auto text-white bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-2.5 text-center dark:from-blue-600 dark:to-blue-800 dark:hover:from-blue-700 dark:hover:to-blue-900 dark:focus:ring-blue-800 transition-all duration-200 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            {{ submitButtonText }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,320 @@
+/* Enhanced login.component.css with improved mobile support */
+
+/* Enhanced animations */
+@keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+@keyframes pulse-slow {
+    0% { opacity: 0.6; transform: scale(0.97); }
+    50% { opacity: 0.9; transform: scale(1); }
+    100% { opacity: 0.6; transform: scale(0.97); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Applied animations */
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-gradient {
+    background-size: 300% 300%;
+    animation: gradient 15s ease infinite;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 4s infinite;
+}
+
+.animate-shimmer {
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.1) 50%, 
+        rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Enhanced glassmorphism effect */
+.backdrop-blur-lg {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Improved checkbox styles */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 18px;
+    width: 18px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input[type="checkbox"]:checked {
+    background-color: rgba(59, 130, 246, 0.8);
+    border-color: rgba(59, 130, 246, 0.8);
+}
+
+input[type="checkbox"]:checked::before {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+input[type="checkbox"]:hover {
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Enhanced input focus effects */
+input:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: rgba(59, 130, 246, 0.8) !important;
+    outline: none;
+}
+
+/* Improved input placeholder styles */
+input::placeholder {
+    color: rgba(147, 197, 253, 0.4);
+    transition: opacity 0.2s ease;
+}
+
+input:focus::placeholder {
+    opacity: 0.5;
+}
+
+/* Button hover animation */
+button:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+button:not(:disabled):active {
+    transform: translateY(0);
+}
+
+/* Enhanced mobile experience */
+@media (max-width: 640px) {
+    .animate-float {
+        animation-duration: 4s; /* Faster animation on mobile */
+    }
+    
+    .backdrop-blur-lg {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+    
+    input, button {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
+    
+    /* Improved tap target sizes for mobile */
+    button, a {
+        min-height: 44px;
+        padding: 10px;
+    }
+    
+    /* Improve form spacing on mobile */
+    .space-y-5 > * + * {
+        margin-top: 1rem;
+    }
+    
+    /* Adjust logo size for mobile */
+    .h-28 {
+        height: 6rem;
+    }
+    
+    .w-28 {
+        width: 6rem;
+    }
+    
+    /* Better input handling on mobile */
+    input {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    /* Fix for iOS input shadows */
+    input {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    /* Better positioning for mobile */
+    .min-h-screen {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Safari and iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+    .min-h-screen {
+        height: -webkit-fill-available;
+    }
+    
+    html, body {
+        height: -webkit-fill-available;
+    }
+}
+
+/* Fix for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+    .backdrop-blur-lg {
+        background-color: rgba(15, 23, 42, 0.85); /* Darker background as fallback */
+    }
+}
+
+/* Enhanced fixes for mobile viewport issues */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    background-color: #0f172a; /* Dark background as base */
+}
+
+/* Prevent content shifting when virtual keyboard appears on mobile */
+@media (max-width: 640px) {
+    .min-h-screen {
+        height: 100%;
+        overflow-y: auto; /* Enable scrolling if needed */
+        padding-bottom: 2rem; /* Add padding to ensure form is fully visible */
+    }
+    
+    /* Ensure form is scrollable on small screens */
+    form {
+        padding-bottom: 1rem;
+    }
+    
+    /* Prevent landscape orientation issues */
+    @media (max-height: 500px) {
+        .animate-float {
+            animation: none; /* Disable animation in landscape to save resources */
+        }
+        
+        .h-36 {
+            height: 5rem;
+        }
+        
+        .h-28 {
+            height: 4rem;
+        }
+        
+        .w-28 {
+            width: 4rem;
+        }
+    }
+}
+
+/* Improve accessibility features */
+input:focus, button:focus, a:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.5);
+    outline-offset: 2px;
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+    input::placeholder {
+        color: rgba(147, 197, 253, 0.4); /* Lighter placeholder text in dark mode */
+    }
+}
+
+/* Custom scrollbar for containers */
+.overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.5) rgba(15, 23, 42, 0.2);
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.2);
+    border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+    border-radius: 10px;
+}
+
+/* Fix for iPhone X and newer notch */
+@supports (padding: max(0px)) {
+    .min-h-screen {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+        padding-top: max(0px, env(safe-area-inset-top));
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+}
+
+/* Fix text selection color */
+::selection {
+    background-color: rgba(59, 130, 246, 0.3);
+    color: white;
+}
+
+/* Ensure active states are visible for touch devices */
+@media (hover: none) {
+    button:active, a:active {
+        opacity: 0.7;
+    }
+}
+
+/* Improved loading spinner */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,501 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 transition-all duration-700">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10"></div>
+  
+  <div class="relative z-10 py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 xl:px-8">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Header Section -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-6">
+        <!-- Back Button -->
+        <button
+          class="group flex items-center text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 hover:scale-[1.02] hover:-translate-x-1"
+          (click)="volverAlDashboard()">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-sm group-hover:shadow-md transition-all duration-200 mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+              class="transform group-hover:-translate-x-0.5 transition-transform duration-200">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </div>
+          <span class="font-medium text-sm sm:text-base">Volver al Dashboard</span>
+        </button>
+        
+        <!-- Title -->
+        <div class="text-center sm:text-right">
+          <h1 class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1 sm:mb-2">
+            Configuración de Cuenta
+          </h1>
+          <p class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-400">
+            Gestiona tu información personal de forma segura
+          </p>
+        </div>
+      </div>
+
+      <!-- Mobile Tab Selector -->
+      <div class="lg:hidden mb-6">
+        <div class="relative">
+          <select 
+            [(ngModel)]="activeTab"
+            class="appearance-none w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 pr-10 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 shadow-sm text-sm sm:text-base">
+            <option value="email" class="text-gray-900 dark:text-gray-100">📧 Cambiar Correo Electrónico</option>
+            <option value="password" class="text-gray-900 dark:text-gray-100">🔒 Cambiar Contraseña</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Tabs -->
+      <div class="hidden lg:block mb-6 lg:mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2">
+          <nav class="flex space-x-2" aria-label="Tabs">
+            <button 
+              (click)="setActiveTab('email')"
+              [ngClass]="{
+                'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md scale-[1.02]': activeTab === 'email',
+                'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700': activeTab !== 'email'
+              }"
+              class="flex-1 flex items-center justify-center px-4 lg:px-6 py-3 lg:py-4 rounded-xl font-medium text-sm transition-all duration-200 group">
+              <div class="flex items-center space-x-2 lg:space-x-3">
+                <div class="flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lg:w-[18px] lg:h-[18px]">
+                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                </div>
+                <span class="hidden sm:inline">Cambiar Correo Electrónico</span>
+                <span class="sm:hidden">Email</span>
+              </div>
+            </button>
+            
+            <button 
+              (click)="setActiveTab('password')"
+              [ngClass]="{
+                'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md scale-[1.02]': activeTab === 'password',
+                'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700': activeTab !== 'password'
+              }"
+              class="flex-1 flex items-center justify-center px-4 lg:px-6 py-3 lg:py-4 rounded-xl font-medium text-sm transition-all duration-200 group">
+              <div class="flex items-center space-x-2 lg:space-x-3">
+                <div class="flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lg:w-[18px] lg:h-[18px]">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <span class="hidden sm:inline">Cambiar Contraseña</span>
+                <span class="sm:hidden">Contraseña</span>
+              </div>
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Content Container -->
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        
+        <!-- Main Form Section -->
+        <div class="xl:col-span-2">
+          
+          <!-- Email Change Form -->
+          <div *ngIf="activeTab === 'email'" [@fadeInOut] 
+            class="bg-white dark:bg-gray-800 shadow-lg rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 transition-all duration-200 hover:shadow-xl">
+            
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+              <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white sm:w-6 sm:h-6">
+                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">Cambiar Correo Electrónico</h2>
+                  <p class="text-white/80 text-xs sm:text-sm mt-1">Actualiza tu dirección de correo electrónico</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-4 sm:p-6 lg:p-8">
+              <!-- Success Message -->
+              <div *ngIf="emailSuccess" [@slideInOut]
+                class="mb-4 sm:mb-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-700 rounded-xl p-3 sm:p-4 transition-all duration-200">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-100 dark:bg-green-800 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600 dark:text-green-400 sm:w-4 sm:h-4">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="text-xs sm:text-sm font-medium text-green-800 dark:text-green-200">
+                      ¡Perfecto! Tu correo electrónico ha sido actualizado correctamente.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <form [formGroup]="emailForm" (ngSubmit)="onSubmitEmail()" class="space-y-4 sm:space-y-6">
+                <!-- Current Email -->
+                <div class="space-y-2">
+                  <label for="currentEmail" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Correo Electrónico Actual
+                  </label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200 sm:w-[18px] sm:h-[18px]">
+                        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                      </svg>
+                    </div>
+                    <input 
+                      type="email" 
+                      id="currentEmail" 
+                      formControlName="currentEmail"
+                      class="block w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                      readonly>
+                  </div>
+                </div>
+
+                <!-- New Email -->
+                <div class="space-y-2">
+                  <label for="newEmail" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Nuevo Correo Electrónico
+                  </label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200 sm:w-[18px] sm:h-[18px]">
+                        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                      </svg>
+                    </div>
+                    <input 
+                      type="email" 
+                      id="newEmail" 
+                      formControlName="newEmail"
+                      class="block w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                      placeholder="ejemplo@correo.com">
+                  </div>
+                  <div *ngIf="emailForm.get('newEmail')?.touched && emailForm.get('newEmail')?.invalid" 
+                    class="text-xs sm:text-sm text-red-500 dark:text-red-400 mt-1">
+                    <div *ngIf="emailForm.get('newEmail')?.errors?.['required']">El correo electrónico es requerido.</div>
+                    <div *ngIf="emailForm.get('newEmail')?.errors?.['email']">Ingresa un correo electrónico válido.</div>
+                  </div>
+                </div>
+
+                <!-- Confirm Email -->
+                <div class="space-y-2">
+                  <label for="confirmEmail" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Confirmar Correo Electrónico
+                  </label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200 sm:w-[18px] sm:h-[18px]">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                    </div>
+                    <input 
+                      type="email" 
+                      id="confirmEmail" 
+                      formControlName="confirmEmail"
+                      class="block w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                      placeholder="Confirma tu nuevo correo">
+                  </div>
+                  <div *ngIf="emailForm.get('confirmEmail')?.touched && emailForm.get('confirmEmail')?.invalid" 
+                    class="text-xs sm:text-sm text-red-500 dark:text-red-400 mt-1">
+                    <div *ngIf="emailForm.get('confirmEmail')?.errors?.['required']">La confirmación del correo es requerida.</div>
+                    <div *ngIf="emailForm.get('confirmEmail')?.errors?.['email']">Ingresa un correo electrónico válido.</div>
+                  </div>
+                  <div *ngIf="emailForm.errors?.['emailsNotMatch'] && emailForm.get('confirmEmail')?.touched" 
+                    class="text-xs sm:text-sm text-red-500 dark:text-red-400 mt-1">
+                    Los correos electrónicos no coinciden.
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2 sm:pt-4">
+                  <button 
+                    type="submit" 
+                    [disabled]="emailForm.invalid || submittingEmail"
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                    <svg *ngIf="submittingEmail" class="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>{{ submittingEmail ? 'Actualizando...' : 'Actualizar Correo Electrónico' }}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Password Change Form -->
+          <div *ngIf="activeTab === 'password'" [@fadeInOut] 
+            class="bg-white dark:bg-gray-800 shadow-lg rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 transition-all duration-200 hover:shadow-xl">
+            
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+              <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white sm:w-6 sm:h-6">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">Cambiar Contraseña</h2>
+                  <p class="text-white/80 text-xs sm:text-sm mt-1">Actualiza tu contraseña de acceso</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-4 sm:p-6 lg:p-8">
+              <!-- Success Message -->
+              <div *ngIf="passwordSuccess" [@slideInOut]
+                class="mb-4 sm:mb-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-700 rounded-xl p-3 sm:p-4 transition-all duration-200">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-shrink-0">
+                    <div class="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-100 dark:bg-green-800 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600 dark:text-green-400 sm:w-4 sm:h-4">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="text-xs sm:text-sm font-medium text-green-800 dark:text-green-200">
+                      ¡Excelente! Tu contraseña ha sido actualizada correctamente.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()" class="space-y-4 sm:space-y-6">
+                <!-- New Password -->
+                <div class="space-y-2">
+                  <label for="newPassword" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Nueva Contraseña
+                  </label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200 sm:w-[18px] sm:h-[18px]">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </div>
+                    <input 
+                      [type]="showNewPassword ? 'text' : 'password'" 
+                      id="newPassword" 
+                      formControlName="newPassword"
+                      class="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                      placeholder="Ingresa tu nueva contraseña">
+                    <button 
+                      type="button"
+                      class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                      (click)="togglePasswordVisibility('new')">
+                      <svg *ngIf="!showNewPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sm:w-[18px] sm:h-[18px]">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <svg *ngIf="showNewPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sm:w-[18px] sm:h-[18px]">
+                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                        <line x1="2" x2="22" y1="2" y2="22"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <!-- Password Validation -->
+                  <div *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.invalid" 
+                    class="text-xs sm:text-sm text-red-500 dark:text-red-400 mt-1">
+                    <div *ngIf="passwordForm.get('newPassword')?.errors?.['required']">La nueva contraseña es requerida.</div>
+                    <div *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">Debe tener al menos 6 caracteres.</div>
+                  </div>
+                  
+                  <!-- Password Strength Indicator -->
+                  <div *ngIf="passwordForm.get('newPassword')?.value" class="mt-3">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Seguridad de la contraseña:</span>
+                      <span [ngClass]="getPasswordStrength().color" class="text-xs sm:text-sm font-semibold">
+                        {{ getPasswordStrength().text }}
+                      </span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div 
+                        [ngClass]="getPasswordStrength().color.replace('text-', 'bg-')" 
+                        class="h-2 rounded-full transition-all duration-300 ease-out"
+                        [style.width]="getPasswordStrength().width">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="space-y-2">
+                  <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Confirmar Contraseña
+                  </label>
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200 sm:w-[18px] sm:h-[18px]">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                    </div>
+                    <input 
+                      [type]="showConfirmPassword ? 'text' : 'password'" 
+                      id="confirmPassword" 
+                      formControlName="confirmPassword"
+                      class="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+                      placeholder="Confirma tu nueva contraseña">
+                    <button 
+                      type="button"
+                      class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                      (click)="togglePasswordVisibility('confirm')">
+                      <svg *ngIf="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sm:w-[18px] sm:h-[18px]">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <svg *ngIf="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sm:w-[18px] sm:h-[18px]">
+                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                        <line x1="2" x2="22" y1="2" y2="22"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <div *ngIf="passwordForm.get('confirmPassword')?.touched && passwordForm.get('confirmPassword')?.invalid" 
+                    class="text-xs sm:text-sm text-red-500 dark:text-red-400 mt-1">
+                    La confirmación es requerida.
+                  </div>
+                  <div *ngIf="passwordForm.errors?.['passwordsNotMatch'] && passwordForm.get('confirmPassword')?.touched" 
+                    class="text-xs sm:text-sm text-red-500 dark:text-red-400 mt-1">
+                    Las contraseñas no coinciden.
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2 sm:pt-4">
+                  <button 
+                    type="submit" 
+                    [disabled]="passwordForm.invalid || submittingPassword"
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                    <svg *ngIf="submittingPassword" class="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>{{ submittingPassword ? 'Actualizando...' : 'Actualizar Contraseña' }}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="xl:col-span-1 space-y-4 sm:space-y-6">
+          
+          <!-- Security Tips Card -->
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-4 sm:p-6 border border-blue-100 dark:border-blue-800">
+            <div class="flex items-center space-x-3 mb-3 sm:mb-4">
+              <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-800 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 dark:text-blue-400 sm:w-5 sm:h-5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <h3 class="text-base sm:text-lg font-bold text-blue-900 dark:text-blue-100">Consejos de Seguridad</h3>
+            </div>
+            <ul class="space-y-2 sm:space-y-3 text-xs sm:text-sm text-blue-800 dark:text-blue-200">
+              <li class="flex items-start space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mt-0.5 flex-shrink-0 sm:w-4 sm:h-4">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Usa al menos 8 caracteres con mayúsculas, minúsculas, números y símbolos</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mt-0.5 flex-shrink-0 sm:w-4 sm:h-4">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Evita información personal fácilmente adivinable</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mt-0.5 flex-shrink-0 sm:w-4 sm:h-4">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>No reutilices contraseñas en múltiples sitios</span>
+              </li>
+              <li class="flex items-start space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mt-0.5 flex-shrink-0 sm:w-4 sm:h-4">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Considera usar un gestor de contraseñas</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Account Status Card -->
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 sm:p-6 border border-green-100 dark:border-green-800">
+            <div class="flex items-center space-x-3 mb-3 sm:mb-4">
+              <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-green-100 dark:bg-green-800 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600 dark:text-green-400 sm:w-5 sm:h-5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <h3 class="text-base sm:text-lg font-bold text-green-900 dark:text-green-100">Estado de la Cuenta</h3>
+            </div>
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs sm:text-sm text-green-700 dark:text-green-300">Verificación de Email</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200">
+                  Verificado
+                </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs sm:text-sm text-green-700 dark:text-green-300">Autenticación 2FA</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200">
+                  Recomendado
+                </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs sm:text-sm text-green-700 dark:text-green-300">Última Actualización</span>
+                <span class="text-xs text-green-600 dark:text-green-400">Hace 2 días</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Help Card -->
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-4 sm:p-6 border border-purple-100 dark:border-purple-800">
+            <div class="flex items-center space-x-3 mb-3 sm:mb-4">
+              <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 dark:bg-purple-800 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-600 dark:text-purple-400 sm:w-5 sm:h-5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <path d="M12 17h.01"></path>
+                </svg>
+              </div>
+              <h3 class="text-base sm:text-lg font-bold text-purple-900 dark:text-purple-100">¿Necesitas Ayuda?</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-purple-700 dark:text-purple-300 mb-3 sm:mb-4">
+              Si tienes problemas para cambiar tu información, nuestro equipo de soporte está aquí para ayudarte.
+            </p>
+            <button class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-purple-200 dark:border-purple-700 text-xs sm:text-sm font-medium rounded-xl text-purple-700 dark:text-purple-300 bg-white dark:bg-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-900/70 transition-all duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:w-4 sm:h-4">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Contactar Soporte
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

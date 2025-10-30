@@ -1,0 +1,65 @@
+/* Estilos para dispositivos móviles */
+@media (max-width: 640px) {
+    .container {
+      padding: 12px;
+      margin: 8px auto;
+    }
+    
+    /* Hacer que los modales sean más fáciles de usar en móvil */
+    input, select, textarea {
+      font-size: 16px !important; /* Previene el zoom automático en inputs en iOS */
+    }
+    
+    /* Mejorar la experiencia táctil en móviles */
+    button {
+      min-height: 44px; /* Altura mínima recomendada para elementos táctiles */
+    }
+    
+    /* Estilos para tarjetas de proveedores en vista móvil */
+    .container > div > div {
+      transition: all 0.2s ease;
+    }
+    
+    /* Efecto de toque para las tarjetas */
+    .container > div > div:active {
+      background-color: #e5e7eb;
+      transform: scale(0.98);
+    }
+  }
+  
+  /* Mejoras para el modal en pantallas pequeñas */
+  @media (max-height: 700px) {
+    .max-h-\[80vh\] {
+      max-height: 85vh !important;
+    }
+  }
+  
+  /* Animaciones para mejorar la experiencia de usuario */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .modal-enter {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Scroll personalizado para contenedores con overflow */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }

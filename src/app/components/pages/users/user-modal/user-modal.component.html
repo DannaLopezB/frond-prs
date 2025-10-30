@@ -1,0 +1,297 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 p-4 flex items-center justify-center">
+  <div class="w-full max-w-4xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden">
+    
+    <!-- Header Section -->
+    <div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 text-white">
+      <div class="absolute inset-0 bg-black/10"></div>
+      <div class="relative z-10 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-4 backdrop-blur-sm">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+        </div>
+        <h2 class="text-3xl font-bold mb-2">
+          {{ isEditing ? 'Actualizar Usuario' : 'Nuevo Usuario' }}
+        </h2>
+        <p class="text-white/80 text-lg">
+          {{ isEditing ? 'Modifica la información del usuario' : 'Completa los datos para crear un usuario' }}
+        </p>
+      </div>
+      
+      <!-- Decorative elements -->
+      <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+    </div>
+
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="p-8 space-y-8">
+      
+      <!-- Profile Image Section -->
+      <div class="flex justify-center -mt-16 relative z-20">
+        <div class="group">
+          <div class="relative">
+            <div class="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-4 border-white dark:border-gray-800 shadow-xl transition-all duration-300 group-hover:scale-105"
+                 [ngClass]="{'ring-4 ring-red-500/50': userForm.get('profileImage')?.touched && userForm.get('profileImage')?.invalid && !profilePreview}">
+              
+              <img *ngIf="profilePreview" [src]="profilePreview" alt="Vista previa" 
+                   class="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"/>
+              
+              <div *ngIf="!profilePreview" 
+                   class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50">
+                <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <label for="profileImage" 
+                   class="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </label>
+            
+            <input id="profileImage" type="file" accept="image/*" (change)="onImageSelected($event)" class="hidden"/>
+          </div>
+          
+          <div class="text-center mt-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400">Imagen de perfil</p>
+            <div *ngIf="userForm.get('profileImage')?.touched && userForm.get('profileImage')?.invalid && !profilePreview"
+                 class="text-red-500 text-xs mt-1 animate-bounce">
+              Imagen requerida
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Fields Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Name Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Nombre
+          </label>
+          <div class="form-input-container">
+            <input type="text" 
+                   formControlName="name" 
+                   (blur)="capitalizeFirstLetter($event)"
+                   class="form-input"
+                   [ngClass]="{'form-input-error': userForm.get('name')?.touched && userForm.get('name')?.invalid}"
+                   placeholder="Ingresa tu nombre">
+          </div>
+          <div class="form-error-container">
+            <div *ngIf="userForm.get('name')?.touched && userForm.get('name')?.invalid" class="form-error">
+              <div *ngIf="userForm.get('name')?.errors?.['required']">El nombre es obligatorio</div>
+              <div *ngIf="userForm.get('name')?.errors?.['pattern']">Debe comenzar con mayúscula</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last Name Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Apellido
+          </label>
+          <div class="form-input-container">
+            <input type="text" 
+                   formControlName="lastName" 
+                   (blur)="capitalizeEachWord($event)"
+                   class="form-input"
+                   [ngClass]="{'form-input-error': userForm.get('lastName')?.touched && userForm.get('lastName')?.invalid}"
+                   placeholder="Ingresa tu apellido">
+          </div>
+          <div class="form-error-container">
+            <div *ngIf="userForm.get('lastName')?.touched && userForm.get('lastName')?.invalid" class="form-error">
+              <div *ngIf="userForm.get('lastName')?.errors?.['required']">El apellido es obligatorio</div>
+              <div *ngIf="userForm.get('lastName')?.errors?.['pattern']">Cada palabra debe comenzar con mayúscula</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Type Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+            </svg>
+            Tipo de Documento
+          </label>
+          <div class="form-input-container">
+            <select formControlName="documentType" class="form-select">
+              <option value="DNI">DNI</option>
+              <option value="CNE">CNE</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Document Number Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+            </svg>
+            Número de Documento
+          </label>
+          <div class="form-input-container">
+            <input type="text" 
+                   formControlName="documentNumber"
+                   class="form-input"
+                   [ngClass]="{'form-input-error': userForm.get('documentNumber')?.touched && userForm.get('documentNumber')?.invalid}"
+                   placeholder="Número de documento">
+          </div>
+          <div class="form-error-container">
+            <div *ngIf="userForm.get('documentNumber')?.touched && userForm.get('documentNumber')?.invalid" class="form-error">
+              <div *ngIf="userForm.get('documentNumber')?.errors?.['required']">El número es obligatorio</div>
+              <div *ngIf="userForm.get('documentNumber')?.errors?.['pattern']">Solo números permitidos</div>
+              <div *ngIf="userForm.get('documentNumber')?.errors?.['invalidLength']">
+                <span *ngIf="userForm.get('documentType')?.value === 'DNI'">DNI debe tener 8 dígitos</span>
+                <span *ngIf="userForm.get('documentType')?.value === 'CNE'">CNE debe tener entre 8 y 20 dígitos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            Teléfono Celular
+          </label>
+          <div class="form-input-container">
+            <input type="text" 
+                   formControlName="cellPhone"
+                   class="form-input"
+                   [ngClass]="{'form-input-error': userForm.get('cellPhone')?.touched && userForm.get('cellPhone')?.invalid}"
+                   placeholder="999 999 999">
+          </div>
+          <div class="form-error-container">
+            <div *ngIf="userForm.get('cellPhone')?.touched && userForm.get('cellPhone')?.invalid" class="form-error">
+              <div *ngIf="userForm.get('cellPhone')?.errors?.['required']">El teléfono es obligatorio</div>
+              <div *ngIf="userForm.get('cellPhone')?.errors?.['pattern']">Debe tener 9 dígitos</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            Correo Electrónico
+            <span *ngIf="isEditing" class="text-xs text-amber-600 dark:text-amber-400 ml-2 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+              No editable
+            </span>
+          </label>
+          <div class="form-input-container">
+            <input type="email" 
+                   formControlName="email"
+                   [readonly]="isEditing"
+                   class="form-input"
+                   [ngClass]="{
+                     'form-input-readonly': isEditing,
+                     'form-input-error': userForm.get('email')?.touched && userForm.get('email')?.invalid
+                   }"
+                   placeholder="correo@ejemplo.com">
+          </div>
+          <div class="form-error-container">
+            <div *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid" class="form-error">
+              <div *ngIf="userForm.get('email')?.errors?.['required']">El correo es obligatorio</div>
+              <div *ngIf="userForm.get('email')?.errors?.['email']">Formato de correo inválido</div>
+              <div *ngIf="userForm.get('email')?.errors?.['emailTaken']">Este correo ya está registrado</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Contraseña
+            <span *ngIf="isEditing" class="text-xs text-blue-600 dark:text-blue-400 ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+              Opcional
+            </span>
+          </label>
+          <div class="form-input-container relative">
+            <input [type]="showPassword ? 'text' : 'password'" 
+                   formControlName="password"
+                   class="form-input pr-12"
+                   [ngClass]="{'form-input-error': userForm.get('password')?.touched && userForm.get('password')?.invalid}"
+                   placeholder="Mínimo 6 caracteres">
+            <button type="button" 
+                    (click)="togglePasswordVisibility()"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              <svg *ngIf="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              <svg *ngIf="showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+              </svg>
+            </button>
+          </div>
+          <div class="form-error-container">
+            <div *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid" class="form-error">
+              <div *ngIf="userForm.get('password')?.errors?.['required']">La contraseña es obligatoria</div>
+              <div *ngIf="userForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Field -->
+        <div class="form-field-container">
+          <label class="form-label">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            Rol del Usuario
+          </label>
+          <div class="form-input-container">
+            <select formControlName="role" class="form-select">
+              <option value="ADMIN">Administrador</option>
+              <option value="USER">Usuario</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <button type="button" 
+                (click)="onCancel()"
+                class="btn-secondary flex-1 sm:flex-none">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Cancelar
+        </button>
+        
+        <button type="submit" 
+                [disabled]="isSubmitting || userForm.invalid"
+                class="btn-primary flex-1">
+          <div class="flex items-center justify-center">
+            <svg *ngIf="isSubmitting" class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <svg *ngIf="!isSubmitting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            {{ isSubmitting ? 'Guardando...' : (isEditing ? 'Actualizar Usuario' : 'Crear Usuario') }}
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

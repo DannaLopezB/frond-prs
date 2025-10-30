@@ -1,0 +1,59 @@
+<div *ngIf="isModalEdit" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+        <h2 class="text-xl font-bold mb-4">Editar Alimento</h2>
+        <form (ngSubmit)="updateFood()">
+            <div class="mb-4">
+                <label for="foodType" class="block text-sm font-medium text-gray-700">Tipo de Alimento</label>
+                <select id="foodType" [(ngModel)]="foodToEdit.foodType" name="foodType"
+                    class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                    <option value="" disabled selected>Selecciona una opción</option>
+                    <option value="Inicio de gallina ponedora">Inicio</option>
+                    <option value="Crecimiento de gallina ponedora o desarrollo">Crecimiento</option>
+                    <option value="Pre-postura gallinas ponedoras">Pre-Postura</option>
+                    <option value="Postura">Postura</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="foodBrand" class="block text-sm font-medium text-gray-700">Marca de Alimento</label>
+                <select id="foodBrand" [(ngModel)]="foodToEdit.foodBrand" name="foodBrand"
+                    class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                    <option value="" disabled selected>Selecciona una opción</option>
+                    <option value="Dekalb Brown">Dekalb Brown</option>
+                    <option value="Avifort">Avifort</option>
+                    <option value="Otra marca">Otra marca</option>
+                </select>
+            </div>
+            <div class="flex mb-4">
+                <div class="flex-1 mx-2">
+                    <label for="packaging" class="block text-sm font-medium text-gray-700">Empaque</label>
+                    <input type="text" id="packaging" [(ngModel)]="foodToEdit.packaging" name="packaging"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                    <p class="text-red-500 text-sm mt-1"
+                        *ngIf="foodToEdit.packaging && !validatePackaging(foodToEdit.packaging)">
+                        Solo se permiten letras y espacios.
+                    </p>
+                </div>
+                <div class="flex-1 mr-2">
+                    <label for="amount" class="block text-sm font-medium text-gray-700">Cantidad</label>
+                    <input type="number" id="amount" [(ngModel)]="foodToEdit.amount" name="amount"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+                <div class="flex-1 ml-2">
+                    <label for="unitMeasure" class="block text-sm font-medium text-gray-700">Unidad de medida</label>
+                    <input type="text" id="unitMeasure" [(ngModel)]="foodToEdit.unitMeasure" name="unitMeasure"
+                        class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                    <p class="text-red-500 text-sm mt-1"
+                        *ngIf="foodToEdit.unitMeasure && !validateUnitMeasure(foodToEdit.unitMeasure)">
+                        Ingresa una unidad válida:'kg'.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="button" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
+                    (click)="closeModal()">Cancelar</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>

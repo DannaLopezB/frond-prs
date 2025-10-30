@@ -1,0 +1,500 @@
+<header class="bg-white shadow-md py-4">
+    <div class="w-full px-4">
+      <h1 class="text-2xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+        <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+            ➡︎ Lista de Proveedores
+        </span>
+      </h1>
+    </div>
+</header>
+
+<div class="container mx-auto my-3 md:my-6 p-3 md:p-4 bg-white shadow-md rounded-lg">
+    <!-- Cabecera con título -->
+    <div class="mb-4">
+        <h2 class="text-lg md:text-xl font-bold mb-4">Lista de Proveedores</h2>
+        
+        <!-- Botón Agregar Proveedor posicionado a la izquierda -->
+        <div class="mb-4">
+            <button (click)="openModal()" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-2.5 md:px-4 rounded flex items-center justify-center text-sm md:text-base">
+                <i class="fas fa-plus mr-2"></i> Agregar Proveedor
+            </button>
+        </div>
+    </div>
+
+    <!-- Botones de exportación -->
+    <div class="flex flex-col sm:flex-row gap-2 mb-4">
+        <button 
+            (click)="exportToPDF()" 
+            class="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 md:py-2.5 md:px-4 rounded flex items-center justify-center text-sm md:text-base transition-colors duration-200"
+            [disabled]="paginatedSuppliers.length === 0"
+            [class.opacity-50]="paginatedSuppliers.length === 0"
+            [class.cursor-not-allowed]="paginatedSuppliers.length === 0">
+            <i class="fas fa-file-pdf mr-2"></i> 
+            <span class="hidden sm:inline">Exportar </span>PDF
+        </button>
+        
+        <button 
+            (click)="exportToExcel()" 
+            class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 md:py-2.5 md:px-4 rounded flex items-center justify-center text-sm md:text-base transition-colors duration-200"
+            [disabled]="paginatedSuppliers.length === 0"
+            [class.opacity-50]="paginatedSuppliers.length === 0"
+            [class.cursor-not-allowed]="paginatedSuppliers.length === 0">
+            <i class="fas fa-file-excel mr-2"></i> 
+            <span class="hidden sm:inline">Exportar </span>XLS
+        </button>
+    </div>
+
+    <!-- Switcher de Estado -->
+    <div class="flex items-center mb-4">
+        <span class="mr-2 font-semibold text-sm md:text-base">Mostrar:</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input 
+                type="checkbox" 
+                class="sr-only peer" 
+                [(ngModel)]="statusActive" 
+                (ngModelChange)="toggleStatus($event)">
+            <div 
+                class="w-10 h-5 md:w-11 md:h-6 bg-red-500 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer 
+                peer-checked:bg-green-500 
+                peer-checked:after:translate-x-5 peer-checked:after:border-white 
+                after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+                after:bg-white after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 
+                after:transition-all">
+            </div>
+            <span class="ml-3 text-xs md:text-sm font-medium text-gray-900">
+                {{ statusActive ? 'Activos' : 'Inactivos' }}
+            </span>
+        </label>
+    </div>
+
+    <!-- Vista móvil: tarjetas en lugar de tabla -->
+    <div class="block sm:hidden">
+        <div *ngFor="let supplier of paginatedSuppliers" class="mb-4 p-4 border rounded-lg bg-gray-50 hover:bg-gray-100">
+            <div class="flex justify-between items-start mb-2">
+                <div class="font-bold text-blue-900">{{ supplier.company }}</div>
+                <span class="inline-flex w-4 h-4 rounded-full"
+                        [ngClass]="{'bg-green-500': supplier.status === 'A', 'bg-red-500': supplier.status === 'I'}">
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-1 text-sm mb-3">
+                <div><span class="font-semibold">Contacto:</span> {{ supplier.name }} {{ supplier.lastname }}</div>
+                <div><span class="font-semibold">Celular:</span> {{ supplier.cellphone }}</div>
+                <div class="col-span-2"><span class="font-semibold">Tipo:</span> {{ getTypeSupplierInfo(supplier.typeSupplierId, 'name') }}</div>
+            </div>
+            
+            <div class="flex justify-end space-x-3 text-lg">
+                <button *ngIf="supplier.status === 'A'" class="text-blue-500 hover:text-blue-700" (click)="updateSupplier(supplier.id, supplier)">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button *ngIf="supplier.status === 'A'" class="text-red-500 hover:text-red-700" (click)="softDeleteSupplier(supplier.id)">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button *ngIf="supplier.status === 'I'" class="text-green-500 hover:text-green-700" (click)="restoreSupplier(supplier.id)">
+                    <i class="fas fa-undo"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista desktop: tabla tradicional -->
+    <div class="hidden sm:block overflow-x-auto">
+        <table class="w-full border-separate border-spacing-y-2 text-sm md:text-base">
+            <thead>
+                <tr class="bg-blue-100 text-blue-900 text-center">
+                    <th class="px-2 py-3 font-semibold hidden md:table-cell">RUC</th>
+                    <th class="px-2 py-3 font-semibold">Empresa</th>
+                    <th class="px-2 py-3 font-semibold">Nombre</th>
+                    <th class="px-2 py-3 font-semibold hidden lg:table-cell">Apellido</th>
+                    <th class="px-2 py-3 font-semibold hidden md:table-cell">Correo</th>
+                    <th class="px-2 py-3 font-semibold">Celular</th>
+                    <th class="px-2 py-3 font-semibold">Tipo</th>
+                    <th class="px-2 py-3 font-semibold hidden lg:table-cell">Notas</th>
+                    <th class="px-2 py-3 font-semibold hidden md:table-cell">Registro</th>
+                    <th class="px-2 py-3 font-semibold">Estado</th>
+                    <th class="px-2 py-3 font-semibold">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let supplier of paginatedSuppliers" class="bg-gray-50 hover:bg-gray-100 text-center border-b">
+                    <td class="px-2 py-3 hidden md:table-cell">{{ supplier.ruc }}</td>
+                    <td class="px-2 py-3">{{ supplier.company }}</td>
+                    <td class="px-2 py-3">{{ supplier.name }}</td>
+                    <td class="px-2 py-3 hidden lg:table-cell">{{ supplier.lastname }}</td>
+                    <td class="px-2 py-3 hidden md:table-cell whitespace-nowrap">{{ supplier.email }}</td>
+                    <td class="px-2 py-3">{{ supplier.cellphone }}</td>
+                    <td class="px-2 py-3">
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-1">
+                            <span>{{ getTypeSupplierInfo(supplier.typeSupplierId, 'name') }}</span>
+                        </div>
+                    </td>
+                    <td class="px-2 py-3 hidden lg:table-cell">{{ supplier.notes }}</td>
+                    <td class="px-2 py-3 hidden md:table-cell">{{ supplier.registerDate | date: 'dd/MMM/yyyy' : 'es' }}</td>
+                    <td class="px-2 py-3">
+                        <span class="inline-flex w-5 h-5 rounded-full"
+                            [ngClass]="{'bg-green-500': supplier.status === 'A', 'bg-red-500': supplier.status === 'I'}">
+                        </span>
+                    </td>
+                    <td class="px-2 py-3 flex justify-center space-x-2 text-lg">
+                        <button *ngIf="supplier.status === 'A'" class="text-blue-500 hover:text-blue-700" (click)="updateSupplier(supplier.id, supplier)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button *ngIf="supplier.status === 'A'" class="text-red-500 hover:text-red-700" (click)="softDeleteSupplier(supplier.id)">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button *ngIf="supplier.status === 'I'" class="text-green-500 hover:text-green-700" (click)="restoreSupplier(supplier.id)">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginador mejorado para móvil -->
+    <div class="flex justify-center mt-4 space-x-1 md:space-x-2">
+        <button 
+            class="px-2 py-1 md:px-3 md:py-2 bg-gray-300 rounded-md text-xs md:text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+            [disabled]="currentPage === 1"
+            (click)="cambiarPagina(currentPage - 1)">
+            <i class="fas fa-chevron-left md:hidden"></i>
+            <span class="hidden md:inline">Anterior</span>
+        </button>
+
+        <!-- Optimizado para mostrar menos páginas en móvil -->
+        <button 
+            *ngFor="let page of getDisplayedPages()"
+            class="px-2 py-1 md:px-3 md:py-2 rounded-md text-xs md:text-sm font-semibold"
+            [ngClass]="{'bg-blue-500 text-white': currentPage === page, 'bg-gray-200 hover:bg-gray-300': currentPage !== page}"
+            (click)="cambiarPagina(page)">
+            {{ page }}
+        </button>
+        
+        <button 
+            class="px-2 py-1 md:px-3 md:py-2 bg-gray-300 rounded-md text-xs md:text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+            [disabled]="currentPage === getPages().length"
+            (click)="cambiarPagina(currentPage + 1)">
+            <i class="fas fa-chevron-right md:hidden"></i>
+            <span class="hidden md:inline">Siguiente</span>
+        </button>
+    </div>
+</div>
+
+<!-- Modal Optimizado con Restricciones -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm transition-opacity duration-300 p-2 md:p-0">
+    <div class="relative w-full max-w-xl mx-auto my-4 md:my-8">
+        <!-- Contenido del modal -->
+        <div class="bg-white rounded-xl shadow-2xl overflow-hidden transition-all transform">
+            <!-- Encabezado -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-4 md:px-6 py-3 md:py-4 rounded-t-lg flex justify-between items-center">
+                <h3 class="text-lg md:text-xl font-semibold text-white">
+                    {{ selectedSupplier?.id ? 'Editar Proveedor' : 'Agregar Proveedor' }}
+                </h3>
+                <button 
+                    (click)="closeModal()" 
+                    class="text-white hover:text-blue-100 transition-colors duration-200"
+                    aria-label="Cerrar modal"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="p-4 md:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <form (ngSubmit)="saveSupplier()" #supplierForm="ngForm" class="space-y-4" novalidate>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <!-- RUC -->
+                        <div class="space-y-1">
+                            <label for="ruc" class="block text-xs md:text-sm font-medium text-gray-700">
+                                RUC <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="ruc" 
+                                name="ruc" 
+                                [(ngModel)]="formSupplier.ruc" 
+                                #rucField="ngModel"
+                                required
+                                pattern="^[0-9]{11}$"
+                                minlength="11"
+                                maxlength="11"
+                                class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                [class.border-red-500]="rucField.invalid && rucField.touched"
+                                [class.border-green-500]="rucField.valid && rucField.touched"
+                                [class.border-gray-300]="!rucField.touched"
+                                placeholder="12345678901"
+                                (keypress)="onlyNumbers($event)"
+                            >
+                            <div *ngIf="rucField.invalid && rucField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="rucField.errors?.['required']">El RUC es obligatorio</span>
+                                <span *ngIf="rucField.errors?.['pattern'] || rucField.errors?.['minlength'] || rucField.errors?.['maxlength']">
+                                    El RUC debe tener exactamente 11 dígitos
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Nombre de la Compañía -->
+                        <div class="space-y-1">
+                            <label for="company" class="block text-xs md:text-sm font-medium text-gray-700">
+                                Empresa <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="company" 
+                                name="company" 
+                                [(ngModel)]="formSupplier.company" 
+                                #companyField="ngModel"
+                                required
+                                minlength="2"
+                                maxlength="100"
+                                pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\.\-&]+$"
+                                class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                [class.border-red-500]="companyField.invalid && companyField.touched"
+                                [class.border-green-500]="companyField.valid && companyField.touched"
+                                [class.border-gray-300]="!companyField.touched"
+                                placeholder="Nombre de la empresa"
+                                (input)="capitalizeInput($event)"
+                            >
+                            <div *ngIf="companyField.invalid && companyField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="companyField.errors?.['required']">El nombre de la empresa es obligatorio</span>
+                                <span *ngIf="companyField.errors?.['minlength']">Mínimo 2 caracteres</span>
+                                <span *ngIf="companyField.errors?.['maxlength']">Máximo 100 caracteres</span>
+                                <span *ngIf="companyField.errors?.['pattern']">Solo se permiten letras, números, espacios, puntos, guiones y &</span>
+                            </div>
+                        </div>
+
+                        <!-- Nombre -->
+                        <div class="space-y-1">
+                            <label for="name" class="block text-xs md:text-sm font-medium text-gray-700">
+                                Nombre <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                [(ngModel)]="formSupplier.name" 
+                                #nameField="ngModel"
+                                required
+                                minlength="2"
+                                maxlength="50"
+                                pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+                                class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                [class.border-red-500]="nameField.invalid && nameField.touched"
+                                [class.border-green-500]="nameField.valid && nameField.touched"
+                                [class.border-gray-300]="!nameField.touched"
+                                placeholder="Nombre del contacto"
+                                (input)="onlyLetters($event); capitalizeInput($event)"
+                            >
+                            <div *ngIf="nameField.invalid && nameField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="nameField.errors?.['required']">El nombre es obligatorio</span>
+                                <span *ngIf="nameField.errors?.['minlength']">Mínimo 2 caracteres</span>
+                                <span *ngIf="nameField.errors?.['maxlength']">Máximo 50 caracteres</span>
+                                <span *ngIf="nameField.errors?.['pattern']">Solo se permiten letras y espacios</span>
+                            </div>
+                        </div>
+
+                        <!-- Apellido -->
+                        <div class="space-y-1">
+                            <label for="lastname" class="block text-xs md:text-sm font-medium text-gray-700">
+                                Apellido <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="lastname" 
+                                name="lastname" 
+                                [(ngModel)]="formSupplier.lastname" 
+                                #lastnameField="ngModel"
+                                required
+                                minlength="2"
+                                maxlength="50"
+                                pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+                                class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                [class.border-red-500]="lastnameField.invalid && lastnameField.touched"
+                                [class.border-green-500]="lastnameField.valid && lastnameField.touched"
+                                [class.border-gray-300]="!lastnameField.touched"
+                                placeholder="Apellido del contacto"
+                                (input)="onlyLetters($event); capitalizeInput($event)"
+                            >
+                            <div *ngIf="lastnameField.invalid && lastnameField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="lastnameField.errors?.['required']">El apellido es obligatorio</span>
+                                <span *ngIf="lastnameField.errors?.['minlength']">Mínimo 2 caracteres</span>
+                                <span *ngIf="lastnameField.errors?.['maxlength']">Máximo 50 caracteres</span>
+                                <span *ngIf="lastnameField.errors?.['pattern']">Solo se permiten letras y espacios</span>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="space-y-1">
+                            <label for="email" class="block text-xs md:text-sm font-medium text-gray-700">
+                                Email <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                [(ngModel)]="formSupplier.email" 
+                                #emailField="ngModel"
+                                required
+                                email
+                                maxlength="100"
+                                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                [class.border-red-500]="emailField.invalid && emailField.touched"
+                                [class.border-green-500]="emailField.valid && emailField.touched"
+                                [class.border-gray-300]="!emailField.touched"
+                                placeholder="correo@empresa.com"
+                                (input)="validateEmailFormat($event)"
+                            >
+                            <div *ngIf="emailField.invalid && emailField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="emailField.errors?.['required']">El email es obligatorio</span>
+                                <span *ngIf="emailField.errors?.['email'] || emailField.errors?.['pattern']">Formato de email inválido</span>
+                                <span *ngIf="emailField.errors?.['maxlength']">Máximo 100 caracteres</span>
+                            </div>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="space-y-1">
+                            <label for="cellphone" class="block text-xs md:text-sm font-medium text-gray-700">
+                                Teléfono <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="cellphone" 
+                                name="cellphone" 
+                                [(ngModel)]="formSupplier.cellphone" 
+                                #cellphoneField="ngModel"
+                                required
+                                pattern="^(\+51|51)?[9][0-9]{8}$"
+                                minlength="9"
+                                maxlength="12"
+                                class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                [class.border-red-500]="cellphoneField.invalid && cellphoneField.touched"
+                                [class.border-green-500]="cellphoneField.valid && cellphoneField.touched"
+                                [class.border-gray-300]="!cellphoneField.touched"
+                                placeholder="987654321 o +51987654321"
+                                (keypress)="onlyNumbers($event, true)"
+                                (input)="formatPhoneNumber($event)"
+                            >
+                            <div *ngIf="cellphoneField.invalid && cellphoneField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="cellphoneField.errors?.['required']">El teléfono es obligatorio</span>
+                                <span *ngIf="cellphoneField.errors?.['pattern']">
+                                    Formato válido: 987654321 o +51987654321 (números peruanos)
+                                </span>
+                                <span *ngIf="cellphoneField.errors?.['minlength']">Mínimo 9 dígitos</span>
+                                <span *ngIf="cellphoneField.errors?.['maxlength']">Máximo 12 caracteres</span>
+                            </div>
+                        </div>
+
+                        <!-- Fecha de Registro -->
+                        <div class="space-y-1">
+                            <label for="registerDate" class="block text-xs md:text-sm font-medium text-gray-700">
+                                Fecha de Registro <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="date" 
+                                    id="registerDate" 
+                                    name="registerDate" 
+                                    [(ngModel)]="formSupplier.registerDate" 
+                                    #registerDateField="ngModel"
+                                    required
+                                    [min]="getMinDate()"
+                                    [max]="getMaxDate()"
+                                    class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    [class.border-red-500]="registerDateField.invalid && registerDateField.touched"
+                                    [class.border-green-500]="registerDateField.valid && registerDateField.touched"
+                                    [class.border-gray-300]="!registerDateField.touched"
+                                >
+                            </div>
+                            <div *ngIf="registerDateField.invalid && registerDateField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="registerDateField.errors?.['required']">La fecha es obligatoria</span>
+                                <span *ngIf="registerDateField.errors?.['min']">La fecha no puede ser anterior a enero 2020</span>
+                                <span *ngIf="registerDateField.errors?.['max']">La fecha no puede ser futura</span>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Proveedor -->
+                        <div class="space-y-1">
+                            <label for="typeSupplierId" class="block text-xs md:text-sm font-medium text-gray-700">
+                                Tipo de Proveedor <span class="text-red-500">*</span>
+                            </label>
+                            <select 
+                                id="typeSupplierId" 
+                                name="typeSupplierId" 
+                                [(ngModel)]="formSupplier.typeSupplierId" 
+                                #typeSupplierField="ngModel"
+                                required
+                                class="w-full px-3 md:px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                                [class.border-red-500]="typeSupplierField.invalid && typeSupplierField.touched"
+                                [class.border-green-500]="typeSupplierField.valid && typeSupplierField.touched"
+                                [class.border-gray-300]="!typeSupplierField.touched"
+                            >
+                                <option [ngValue]="0" disabled>Seleccione un tipo</option>
+                                <option *ngFor="let type of typeSuppliers" [ngValue]="type.id">
+                                    {{ type.name }}
+                                </option>
+                            </select>
+                            <div *ngIf="typeSupplierField.invalid && typeSupplierField.touched" class="text-red-500 text-xs mt-1">
+                                <span *ngIf="typeSupplierField.errors?.['required']">Debe seleccionar un tipo de proveedor</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notas -->
+                    <div class="space-y-1">
+                        <label for="notes" class="block text-xs md:text-sm font-medium text-gray-700">
+                            Notas <span class="text-gray-400">(Opcional)</span>
+                        </label>
+                        <textarea 
+                            id="notes" 
+                            name="notes" 
+                            [(ngModel)]="formSupplier.notes" 
+                            #notesField="ngModel"
+                            rows="3"
+                            maxlength="500"
+                            class="w-full px-3 md:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                            placeholder="Información adicional sobre el proveedor..."
+                        ></textarea>
+                        <div class="text-right text-xs text-gray-400">
+                                {{ (formSupplier.notes.length || 0) }}/500 caracteres
+                        </div>
+                    </div>
+
+                    <!-- Indicador de campos obligatorios -->
+                    <div class="text-xs text-gray-500 italic">
+                        <span class="text-red-500">*</span> Campos obligatorios
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="flex flex-col-reverse sm:flex-row justify-end space-y-2 sm:space-y-0 space-x-0 sm:space-x-3 mt-6">
+                        <button 
+                            type="button" 
+                            (click)="closeModal()" 
+                            class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 font-medium text-sm"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            type="submit" 
+                            [disabled]="supplierForm.invalid || isSubmitting"
+                            class="w-full sm:w-auto mb-2 sm:mb-0 px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all duration-200 font-medium shadow-md disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none text-sm"
+                        >
+                            <span *ngIf="!isSubmitting">
+                                {{ selectedSupplier?.id ? 'Actualizar Proveedor' : 'Guardar Proveedor' }}
+                            </span>
+                            <span *ngIf="isSubmitting" class="flex items-center justify-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Procesando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

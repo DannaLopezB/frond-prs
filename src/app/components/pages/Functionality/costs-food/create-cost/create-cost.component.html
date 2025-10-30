@@ -1,0 +1,86 @@
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-[700px]">
+        <h2 class="text-xl font-bold mb-4">Agregar Costo de Alimento</h2>
+        <form (ngSubmit)="addCost()">
+            <div class="flex flex-col md:flex-row gap-x-4">
+                <!-- Columna Izquierda -->
+                <div class="flex-1">
+                    <div class="mb-4">
+                        <label for="henSelector" class="block text-sm font-medium text-gray-700">Galpón</label>
+                        <select id="henSelector" [(ngModel)]="selectedHen" name="henSelector"
+                            (ngModelChange)="onHenSelected($event)"
+                            class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                            <option [ngValue]="null" disabled selected>Selecciona una opción</option>
+                            <option *ngFor="let hen of hens" [ngValue]="hen">
+                                {{ getShedName(hen.shedId) }}({{ hen.quantity }}-gallinas)
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="weekNumber" class="block text-sm font-medium text-gray-700">Semana</label>
+                        <select id="weekNumber" [(ngModel)]="newCostFood.weekNumber" name="weekNumber"
+                            class="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            (change)="onWeekSelected(newCostFood.weekNumber)"
+                            [disabled]="!selectedHen || filteredWeeks.length === 0" required>
+                            <option *ngFor="let week of filteredWeeks" [value]="week">{{ week }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="gramsPerChicken" class="block text-sm font-medium text-gray-700">gr/gallina
+                        </label> <input type="text" id="gramsPerChicken" [(ngModel)]="newCostFood.gramsPerChicken"
+                            name="gramsPerChicken" class="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                            required>
+                        <p class="text-red-500 text-sm mt-1"
+                            *ngIf="newCostFood.gramsPerChicken && !validateGrGallina(newCostFood.gramsPerChicken)">
+                            Ingresa la cantidad de alimento. </p>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="flex-1">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 flex items-center" for="feedTypeInput">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-1"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-8-4a1 1 0 10-2 0v4a1 1 0 00.293.707l2.5 2.5a1 1 0 101.414-1.414L10 9.586V6z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Tipo de Alimento (Guía):
+                        </label>
+                        <input type="text"
+                            class="form-control bg-gray-100 text-gray-500 italic border border-gray-300 rounded-md p-2"
+                            id="feedTypeInput" [value]="selectedFeedType" readonly />
+                    </div>
+                    <div class="mb-4">
+                        <label for="foodType" class="block text-sm font-medium text-gray-700">Tipo de Alimento</label>
+                        <select id="foodType" name="foodType" [(ngModel)]="selectedFood"
+                            (ngModelChange)="onFoodSelected($event)"
+                            class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                            <option [ngValue]="null" disabled selected>Selecciona un alimento</option>
+                            <option *ngFor="let food of activeFoods" [ngValue]="food">
+                                {{ food.foodType.split(' ')[0] }}-{{ food.foodBrand
+                                }}({{food.amount}}{{food.unitMeasure}})
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label for="unitPrice" class="block text-sm font-medium text-gray-700">Costo x saco</label>
+                        <input type="text" id="unitPrice" [(ngModel)]="newCostFood.unitPrice" name="unitPrice"
+                            class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                        <p class="text-red-500 text-sm mt-1"
+                            *ngIf="newCostFood.unitPrice && !validateUnitPrice(newCostFood.unitPrice)">
+                            Ingresa el precio del saco.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
+                    (click)="closeModal()">Cancelar
+                </button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Agregar</button>
+            </div>
+        </form>
+    </div>
+</div>

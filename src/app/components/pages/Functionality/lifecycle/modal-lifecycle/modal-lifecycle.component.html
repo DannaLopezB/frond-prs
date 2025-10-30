@@ -1,0 +1,426 @@
+<!-- Modal de Detalles -->
+<div *ngIf="mostrarModalDetalle" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div
+    class="bg-gradient-to-b from-cyan-50 to-white p-0 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+    <div class="bg-cyan-600 py-4 px-6">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-info-circle mr-2"></i> Detalles del Ciclo
+      </h3>
+    </div>
+
+    <div class="p-6">
+      <div class="grid grid-cols-1 gap-4">
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-sm text-gray-500 mb-1">Tipo de Hito</div>
+          <div class="font-medium flex items-center">
+            <i class="fas fa-tag text-cyan-500 mr-2"></i>
+            {{ cicloDetalle?.typeIto }}
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-sm text-gray-500 mb-1">Nombre</div>
+          <div class="font-medium flex items-center">
+            <i class="fas fa-signature text-cyan-500 mr-2"></i>
+            {{ cicloDetalle?.nameIto }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-sm text-gray-500 mb-1">Tipo de Tiempo</div>
+            <div class="font-medium flex items-center">
+              <i class="fas fa-hourglass-half text-cyan-500 mr-2"></i>
+              {{ cicloDetalle?.typeTime }}
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-sm text-gray-500 mb-1">Tiempo</div>
+            <div class="font-medium flex items-center">
+              <i class="fas fa-clock text-cyan-500 mr-2"></i>
+              {{ cicloDetalle?.times }}
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-sm text-gray-500 mb-1">Llegada de Gallina</div>
+          <div class="font-medium flex items-center">
+            <i class="fas fa-calendar-plus text-cyan-500 mr-2"></i>
+            {{ cicloDetalle?.arrivalDate | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-sm text-gray-500 mb-1">Fecha en la que se debe aplicar</div>
+          <div class="font-medium flex items-center">
+            <i class="fas fa-calendar-check text-cyan-500 mr-2"></i>
+            {{ cicloDetalle?.endDate | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <div class="text-sm text-gray-500 mb-1">Estado</div>
+          <div class="font-medium flex items-center">
+            <i class="fas"
+              [ngClass]="{'fa-check-circle text-green-500': cicloDetalle?.status === 'A', 'fa-times-circle text-red-500': cicloDetalle?.status === 'I'}"
+              class="mr-2"></i>
+            {{ cicloDetalle?.status === 'A' ? 'Activo' : 'Inactivo' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center mt-6">
+        <button (click)="cerrarModalDetalle.emit()"
+          class="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium transition-colors flex items-center">
+          <i class="fas fa-times mr-2"></i> Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de edición -->
+<div *ngIf="mostrarModalEdicion && cicloSeleccionado" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div
+    class="bg-gradient-to-b from-blue-50 to-white p-0 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+    <div class="bg-blue-600 py-4 px-6">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-edit mr-2"></i> Editar Ciclo
+      </h3>
+    </div>
+
+    <div class="p-6">
+      <!-- Galpón -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Galpón *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-home"
+              [ngClass]="{'text-green-500': validFields['henId'], 'text-red-500': validationErrors['henId'], 'text-gray-400': !validationErrors['henId'] && !validFields['henId']}"></i>
+          </div>
+          <select class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('henId')" [(ngModel)]="cicloSeleccionado.henId">
+            <option value="" disabled selected>Selecciona un galpón</option>
+            <option *ngFor="let hen of hens" [ngValue]="hen.id">
+              {{ hen.name ? hen.name : 'Galpón ' + hen.id }}
+            </option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['henId']" class="text-xs text-red-500 mt-1">{{ validationErrors['henId']
+          }}</span>
+      </div>
+
+      <!-- Tipo de Hito -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Hito *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-tag"
+              [ngClass]="{'text-green-500': validFields['typeIto'], 'text-red-500': validationErrors['typeIto'], 'text-gray-400': !validationErrors['typeIto'] && !validFields['typeIto']}"></i>
+          </div>
+          <select class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('typeIto')" [(ngModel)]="cicloSeleccionado.typeIto"
+            (change)="onTipoItoChangeEdicion.emit()">
+            <option value="" disabled selected>Selecciona un tipo</option>
+            <option value="Vacunas">Vacunas</option>
+            <option value="Alimentación">Alimentación</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['typeIto']" class="text-xs text-red-500 mt-1">{{ validationErrors['typeIto']
+          }}</span>
+      </div>
+
+      <!-- Nombre del Hito -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Hito *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-signature"
+              [ngClass]="{'text-green-500': validFields['nameIto'], 'text-red-500': validationErrors['nameIto'], 'text-gray-400': !validationErrors['nameIto'] && !validFields['nameIto']}"></i>
+          </div>
+          <!-- Si es vacunas, mostrar dropdown -->
+          <select *ngIf="cicloSeleccionado.typeIto === 'Vacunas'"
+            class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('nameIto')" [(ngModel)]="cicloSeleccionado.nameIto">
+            <option value="" disabled selected>Selecciona una vacuna</option>
+            <option *ngFor="let vacuna of vacunas" [value]="vacuna.nameVaccine">
+              {{ vacuna.nameVaccine }}
+            </option>
+          </select>
+
+          <!-- Si es alimentación, mostrar dropdown -->
+          <select *ngIf="cicloSeleccionado.typeIto === 'Alimentación'"
+            class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('nameIto')" [(ngModel)]="cicloSeleccionado.nameIto">
+            <option value="" disabled selected>Selecciona un alimento</option>
+            <option *ngFor="let alimento of alimentos" [value]="alimento.foodType">
+              {{ alimento.foodType }}
+            </option>
+          </select>
+
+          <!-- Si no es vacunas ni alimentación, mostrar input normal -->
+          <input *ngIf="cicloSeleccionado.typeIto !== 'Vacunas' && cicloSeleccionado.typeIto !== 'Alimentación'"
+            type="text" class="w-full pl-10 pr-3 py-2 border rounded-lg" [ngClass]="getFieldClass('nameIto')"
+            [(ngModel)]="cicloSeleccionado.nameIto" placeholder="Nombre del hito">
+
+          <div *ngIf="cicloSeleccionado.typeIto === 'Vacunas' || cicloSeleccionado.typeIto === 'Alimentación'"
+            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['nameIto']" class="text-xs text-red-500 mt-1">{{ validationErrors['nameIto']
+          }}</span>
+      </div>
+
+      <!-- Tipo de tiempo -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de tiempo *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-hourglass-half"
+              [ngClass]="{'text-green-500': validFields['typeTime'], 'text-red-500': validationErrors['typeTime'], 'text-gray-400': !validationErrors['typeTime'] && !validFields['typeTime']}"></i>
+          </div>
+          <select class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('typeTime')" [(ngModel)]="cicloSeleccionado.typeTime">
+            <option value="" disabled selected>Selecciona un tipo de tiempo</option>
+            <option value="Día">Día</option>
+            <option value="Semana">Semana</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['typeTime']" class="text-xs text-red-500 mt-1">{{ validationErrors['typeTime']
+          }}</span>
+      </div>
+
+      <!-- Tiempo -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Tiempo *
+          <span *ngIf="cicloSeleccionado.typeTime === 'Semana'" class="text-xs text-gray-500">(máximo 120)</span>
+        </label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-clock"
+              [ngClass]="{'text-green-500': validFields['times'], 'text-red-500': validationErrors['times'], 'text-gray-400': !validationErrors['times'] && !validFields['times']}"></i>
+          </div>
+          <input type="number" class="w-full pl-10 pr-3 py-2 border rounded-lg" [ngClass]="getFieldClass('times')"
+            [(ngModel)]="cicloSeleccionado.times" min="1"
+            [max]="cicloSeleccionado.typeTime === 'Semana' ? 120 : null">
+        </div>
+        <span *ngIf="validationErrors['times']" class="text-xs text-red-500 mt-1">{{ validationErrors['times']
+          }}</span>
+      </div>
+
+      <!-- Estado -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-toggle-on text-gray-400"></i>
+          </div>
+          <select
+            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+            [(ngModel)]="cicloSeleccionado.status">
+            <option value="A">Activo</option>
+            <option value="I">Inactivo</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 mt-6">
+        <button
+          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors flex items-center"
+          (click)="cerrarModalEdicion.emit()">
+          <i class="fas fa-times mr-2"></i> Cancelar
+        </button>
+        <button [disabled]="isSaving"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center"
+          (click)="guardarEdicion.emit()">
+          <ng-container *ngIf="!isSaving">
+            <i class="fas fa-save mr-2"></i> Guardar
+          </ng-container>
+          <ng-container *ngIf="isSaving">
+            <i class="fas fa-spinner fa-spin mr-2"></i> Guardando...
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Crear Ciclo con validaciones -->
+<div *ngIf="mostrarModalCrear" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div
+    class="bg-gradient-to-b from-green-50 to-white p-0 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+    <div class="bg-green-600 py-4 px-6">
+      <h3 class="text-xl font-bold text-white flex items-center">
+        <i class="fas fa-plus-circle mr-2"></i> Crear Ciclo
+      </h3>
+    </div>
+
+    <div class="p-6">
+      <!-- Galpón -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Galpón *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-home"
+              [ngClass]="{'text-green-500': validFields['henId'], 'text-red-500': validationErrors['henId'], 'text-gray-400': !validationErrors['henId'] && !validFields['henId']}"></i>
+          </div>
+          <select class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('henId')" [(ngModel)]="nuevoCiclo.henId">
+            <option value="" disabled selected>Selecciona un galpón</option>
+            <option *ngFor="let hen of hens" [ngValue]="hen.id">
+              {{ hen.name ? hen.name : 'Galpón ' + hen.id }}
+            </option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+          <!-- Overlay que muestra el texto cuando el select está vacío -->
+          <div *ngIf="!nuevoCiclo.henId"
+            class="absolute inset-y-0 left-0 right-0 flex items-center pl-10 pointer-events-none">
+            <span class="text-gray-900">Selecciona un galpón</span>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['henId']" class="text-xs text-red-500 mt-1">{{ validationErrors['henId']
+          }}</span>
+      </div>
+
+      <!-- Tipo de Hito -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Hito *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-tag"
+              [ngClass]="{'text-green-500': validFields['typeIto'], 'text-red-500': validationErrors['typeIto'], 'text-gray-400': !validationErrors['typeIto'] && !validFields['typeIto']}"></i>
+          </div>
+          <select class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('typeIto')" [(ngModel)]="nuevoCiclo.typeIto" (change)="onTipoItoChange.emit()">
+            <option value="" disabled selected>Selecciona un tipo</option>
+            <option value="Vacunas">Vacunas</option>
+            <option value="Alimentación">Alimentación</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['typeIto']" class="text-xs text-red-500 mt-1">{{ validationErrors['typeIto']
+          }}</span>
+      </div>
+
+      <!-- Nombre del Hito -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Hito *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-signature"
+              [ngClass]="{'text-green-500': validFields['nameIto'], 'text-red-500': validationErrors['nameIto'], 'text-gray-400': !validationErrors['nameIto'] && !validFields['nameIto']}"></i>
+          </div>
+          <!-- Dropdown para vacunas -->
+          <select *ngIf="nuevoCiclo.typeIto === 'Vacunas'"
+            class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('nameIto')" [(ngModel)]="nuevoCiclo.nameIto">
+            <option value="" disabled selected>Selecciona una vacuna</option>
+            <option *ngFor="let vacuna of vacunas" [value]="vacuna.nameVaccine">
+              {{ vacuna.nameVaccine }}
+            </option>
+          </select>
+
+          <!-- Dropdown para alimentación -->
+          <select *ngIf="nuevoCiclo.typeIto === 'Alimentación'"
+            class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('nameIto')" [(ngModel)]="nuevoCiclo.nameIto">
+            <option value="" disabled selected>Selecciona un alimento</option>
+            <option *ngFor="let alimento of alimentos" [value]="alimento.foodType">
+              {{ alimento.foodType }}
+            </option>
+          </select>
+
+          <!-- Input para otros tipos -->
+          <input *ngIf="nuevoCiclo.typeIto !== 'Vacunas' && nuevoCiclo.typeIto !== 'Alimentación'" type="text"
+            class="w-full pl-10 pr-3 py-2 border rounded-lg" [ngClass]="getFieldClass('nameIto')"
+            [(ngModel)]="nuevoCiclo.nameIto" placeholder="Nombre del hito">
+
+          <div *ngIf="nuevoCiclo.typeIto === 'Vacunas' || nuevoCiclo.typeIto === 'Alimentación'"
+            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['nameIto']" class="text-xs text-red-500 mt-1">{{ validationErrors['nameIto']
+          }}</span>
+      </div>
+
+      <!-- Tipo de Tiempo -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Tiempo *</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-hourglass-half"
+              [ngClass]="{'text-green-500': validFields['typeTime'], 'text-red-500': validationErrors['typeTime'], 'text-gray-400': !validationErrors['typeTime'] && !validFields['typeTime']}"></i>
+          </div>
+          <select class="w-full pl-10 pr-3 py-2 border rounded-lg appearance-none bg-white"
+            [ngClass]="getFieldClass('typeTime')" [(ngModel)]="nuevoCiclo.typeTime">
+            <option value="" disabled selected>Selecciona un tipo de tiempo</option>
+            <option value="Día">Día</option>
+            <option value="Semana">Semana</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+        <span *ngIf="validationErrors['typeTime']" class="text-xs text-red-500 mt-1">{{ validationErrors['typeTime']
+          }}</span>
+      </div>
+
+      <!-- Tiempo -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Tiempo *
+          <span *ngIf="nuevoCiclo.typeTime === 'Semana'" class="text-xs text-gray-500">(máximo 120)</span>
+        </label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <i class="fas fa-clock"
+              [ngClass]="{'text-green-500': validFields['times'], 'text-red-500': validationErrors['times'], 'text-gray-400': !validationErrors['times'] && !validFields['times']}"></i>
+          </div>
+          <input type="number" class="w-full pl-10 pr-3 py-2 border rounded-lg" [ngClass]="getFieldClass('times')"
+            [(ngModel)]="nuevoCiclo.times" min="1" [max]="nuevoCiclo.typeTime === 'Semana' ? 120 : null">
+        </div>
+        <span *ngIf="validationErrors['times']" class="text-xs text-red-500 mt-1">{{ validationErrors['times']
+          }}</span>
+      </div>
+
+      <div class="flex justify-end space-x-3 mt-6">
+        <button
+          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors flex items-center"
+          (click)="cerrarModalCrear.emit()">
+          <i class="fas fa-times mr-2"></i> Cancelar
+        </button>
+        <button [disabled]="isSaving"
+          class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center"
+          (click)="crearCiclo.emit()">
+          <ng-container *ngIf="!isSaving">
+            <i class="fas fa-check mr-2"></i> Guardar
+          </ng-container>
+          <ng-container *ngIf="isSaving">
+            <i class="fas fa-spinner fa-spin mr-2"></i> Guardando...
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

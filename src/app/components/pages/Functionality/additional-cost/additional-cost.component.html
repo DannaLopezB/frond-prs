@@ -1,0 +1,409 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 sm:p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Header Principal con efectos mejorados -->
+    <div class="relative overflow-hidden bg-white backdrop-blur-sm bg-opacity-90 shadow-2xl rounded-2xl border border-white/20">
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10"></div>
+      <div class="relative p-6 sm:p-8">
+        <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
+          <div class="flex items-center space-x-4">
+            <div class="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent">
+                Registro de Utilidad Diaria
+              </h1>
+              <p class="text-gray-600 mt-1">Gestiona y controla tus registros financieros diarios</p>
+            </div>
+          </div>
+          
+          <button 
+            (click)="addUtilityDiary()" 
+            class="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <span>Agregar Registro</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Exportación con nuevo diseño -->
+    <div *ngIf="!isLoading && !hasError && utilityDiaries.length > 0" 
+         class="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl border border-white/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-6">
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-gray-800">Exportar Datos</h2>
+              <p class="text-sm text-gray-600 flex items-center mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ utilityDiaries.length }} registros disponibles
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <button 
+              (click)="exportToPDF()" 
+              class="group relative overflow-hidden bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+              <div class="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <div class="relative flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span>PDF</span>
+              </div>
+            </button>
+            
+            <button 
+              (click)="exportToExcel()" 
+              class="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+              <div class="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <div class="relative flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Excel</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+  <div class="flex items-center gap-4">
+    
+    <!-- Interruptor -->
+    <label class="flex items-center cursor-pointer">
+      <div class="relative">
+        <input 
+          type="checkbox" 
+          class="sr-only" 
+          [checked]="filterStatus === 'A'" 
+          (change)="toggleStatus()" 
+        />
+        <div class="w-10 h-6 bg-blue-300 rounded-full shadow-inner transition duration-300"></div>
+        <div class="dot absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition transform duration-300"
+             [ngClass]="{ 'translate-x-4': filterStatus === 'A' }"></div>
+      </div>
+      <span class="ml-3 text-sm text-blue-700 font-medium">
+        {{ filterStatus === 'A' ? 'ACTIVOS' : 'INACTIVOS' }}
+      </span>
+    </label>
+
+    <!-- Texto adicional con número de registros -->
+    <div class="flex items-center text-sm text-blue-700">
+      <i class="fas fa-info-circle mr-1 text-blue-500"></i>
+      ({{ filteredUtilityDiaries.length }} registros)
+    </div>
+    
+  </div>
+</div>
+
+
+    <!-- Estados de carga mejorados -->
+    <div *ngIf="isLoading" class="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl p-12 text-center border border-white/30">
+      <div class="flex flex-col items-center space-y-4">
+        <div class="relative">
+          <div class="w-16 h-16 border-4 border-blue-200 rounded-full animate-pulse"></div>
+          <div class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"></div>
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-2xl font-bold text-gray-800">Cargando datos</h3>
+          <p class="text-gray-600">Preparando tu información...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error mejorado -->
+    <div *ngIf="hasError" class="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl p-12 text-center border border-red-100">
+      <div class="flex flex-col items-center space-y-6">
+        <div class="p-4 bg-red-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-2xl font-bold text-gray-800">Error de conexión</h3>
+          <p class="text-gray-600 max-w-md">No se pudo establecer conexión con la base de datos. Verifica tu conexión e intenta nuevamente.</p>
+        </div>
+        <button (click)="loadAllData()" 
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+          Reintentar
+        </button>
+      </div>
+    </div>
+
+    <!-- Sin datos mejorado -->
+    <div *ngIf="!isLoading && !hasError && utilityDiaries.length === 0" 
+         class="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl p-12 text-center border border-white/30">
+      <div class="flex flex-col items-center space-y-6">
+        <div class="p-4 bg-gray-100 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-2xl font-bold text-gray-800">Sin registros</h3>
+          <p class="text-gray-600">Comienza agregando tu primer registro de utilidad diaria</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla Desktop mejorada -->
+    <div *ngIf="!isLoading && !hasError && utilityDiaries.length > 0" 
+         class="hidden lg:block bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden border border-white/30">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ventas</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Costo Alimento</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Cuidado</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Costo Adicional</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ganancia Diaria</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Fecha</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let diary of filteredUtilityDiaries; let i = index" 
+                [ngClass]="i % 2 === 0 ? 'bg-white' : 'bg-gradient-to-r from-blue-50/50 to-indigo-50/50'" 
+                class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 hover:shadow-md">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  {{ diary.id }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="font-semibold text-emerald-700">
+                  <!-- S/. {{ getSaleDetails(diary.idSale) }} -->
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ getFoodCostDetails(diary.idFood) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ diary.cuidado }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ diary.costoAdicional | currency:'S/. ' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-800">
+                  {{ diary.gananciaDiaria | currency:'S/. ' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-900">{{ diary.fecha | date:'dd/MM/yyyy' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap space-x-2">
+                <button (click)="editUtilityDiary(diary.id)" 
+                        class="group inline-flex items-center p-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-600 hover:text-indigo-700 rounded-lg transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button (click)="deleteUtilityDiary(diary.id)" 
+                        class="group inline-flex items-center p-2 bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 rounded-lg transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Paginación mejorada -->
+      <div class="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-4 border-t border-gray-100">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 flex justify-between sm:hidden">
+            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+              Anterior
+            </button>
+            <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+              Siguiente
+            </button>
+          </div>
+          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p class="text-sm text-gray-700">
+                Mostrando <span class="font-medium text-indigo-600">1</span> a <span class="font-medium text-indigo-600">{{ filteredUtilityDiaries.length }}</span> 
+                de <span class="font-medium text-indigo-600">{{ filteredUtilityDiaries.length }}</span> registros
+              </p>
+            </div>
+            <nav class="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px">
+              <button class="relative inline-flex items-center px-2 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-blue-50 transition-colors duration-200">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </button>
+              <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-100 text-sm font-medium text-blue-700">1</button>
+              <button class="relative inline-flex items-center px-2 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-blue-50 transition-colors duration-200">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vista de tarjetas móvil mejorada -->
+    <div *ngIf="!isLoading && !hasError && utilityDiaries.length > 0" class="lg:hidden space-y-4">
+      <div *ngFor="let diary of filteredUtilityDiaries" 
+           class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-white/30 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        
+        <!-- Header de la tarjeta -->
+        <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/20 text-white">
+                ID: {{ diary.id }}
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 text-white/90 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-8 0h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              </svg>
+              {{ diary.fecha | date:'dd/MM/yyyy' }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Contenido de la tarjeta -->
+        <div class="p-5 space-y-4">
+          <!-- Ventas y Costos -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-100">
+              <div class="flex items-center space-x-2 mb-2">
+                <div class="p-1 bg-emerald-500 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
+                <p class="text-xs font-bold text-emerald-700 uppercase tracking-wide">Ventas</p>
+              </div>
+              <!-- <p class="text-lg font-bold text-gray-800">S/. {{ getSaleDetails(diary.idSale) }}</p> -->
+            </div>
+            
+            <div class="bg-gradient-to-br from-orange-50 to-red-50 p-4 rounded-xl border border-orange-100">
+              <div class="flex items-center space-x-2 mb-2">
+                <div class="p-1 bg-orange-500 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                  </svg>
+                </div>
+                <p class="text-xs font-bold text-orange-700 uppercase tracking-wide">Alimento</p>
+              </div>
+              <p class="text-sm font-bold text-gray-800">{{ getFoodCostDetails(diary.idFood) }}</p>
+            </div>
+          </div>
+          
+          <!-- Cuidado -->
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+            <div class="flex items-center space-x-2 mb-2">
+              <div class="p-1 bg-blue-500 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <p class="text-xs font-bold text-blue-700 uppercase tracking-wide">Cuidado</p>
+            </div>
+            <p class="text-sm text-gray-800">{{ diary.cuidado }}</p>
+          </div>
+          
+          <!-- Costos y Ganancia -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100">
+              <div class="flex items-center space-x-2 mb-2">
+                <div class="p-1 bg-purple-500 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                  </svg>
+                </div>
+                <p class="text-xs font-bold text-purple-700 uppercase tracking-wide">Adicional</p>
+              </div>
+              <p class="text-sm font-bold text-gray-800">{{ diary.costoAdicional | currency:'S/. ' }}</p>
+            </div>
+            
+            <div class="bg-gradient-to-br from-emerald-100 to-teal-100 p-4 rounded-xl border-2 border-emerald-200">
+              <div class="flex items-center space-x-2 mb-2">
+                <div class="p-1 bg-emerald-600 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Ganancia</p>
+              </div>
+              <p class="text-lg font-black text-emerald-800">{{ diary.gananciaDiaria | currency:'S/. ' }}</p>
+            </div>
+          </div>
+          
+          <!-- Botones de acción -->
+          <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
+            <button (click)="editUtilityDiary(diary.id)" 
+                    class="group flex items-center space-x-2 bg-gradient-to-r from-indigo-100 to-blue-100 hover:from-indigo-200 hover:to-blue-200 text-indigo-700 hover:text-indigo-800 font-medium py-2.5 px-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span class="text-sm">Editar</span>
+            </button>
+            
+            <button (click)="deleteUtilityDiary(diary.id)" 
+                    class="group flex items-center space-x-2 bg-gradient-to-r from-red-100 to-pink-100 hover:from-red-200 hover:to-pink-200 text-red-700 hover:text-red-800 font-medium py-2.5 px-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span class="text-sm">Eliminar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Paginación móvil mejorada -->
+      <div class="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl p-4 border border-white/30">
+        <div class="flex items-center justify-between">
+          <button class="flex items-center space-x-2 bg-gradient-to-r from-gray-100 to-blue-100 hover:from-gray-200 hover:to-blue-200 text-gray-700 hover:text-gray-800 font-medium py-2.5 px-4 rounded-xl transition-all duration-300 hover:shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Anterior</span>
+          </button>
+          
+          <div class="flex items-center space-x-2">
+            <span class="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 rounded-lg text-sm font-medium">
+              Página 1
+            </span>
+          </div>
+          
+          <button class="flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-indigo-100 hover:from-blue-200 hover:to-indigo-200 text-blue-700 hover:text-blue-800 font-medium py-2.5 px-4 rounded-xl transition-all duration-300 hover:shadow-md">
+            <span>Siguiente</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Component -->
+<app-additional-cost-form-modal
+    [isOpen]="isModalOpen"
+    [diaryToEdit]="selectedDiary"
+    (closeModal)="closeModal()"
+    (formSubmitted)="handleFormSubmitted($event)">
+</app-additional-cost-form-modal>

@@ -1,0 +1,206 @@
+<!-- Encabezado -->
+<header class="bg-white shadow-md py-4">
+  <div class="w-full px-4">
+    <h1 class="text-3xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+      <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+        🐔 Alimentos
+      </span>
+    </h1>
+  </div>
+</header>
+
+<!-- Card 1 : Subtitulo, Botón agregar, Filtro de búsqueda y botón de descarga -->
+<div class="container mx-auto my-6 p-4 bg-white shadow-md rounded-lg">
+
+  <!-- Subtítulo y botón de agregar -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-2 sm:space-y-0">
+    <h2 class="text-lg sm:text-xl font-bold">Lista de Alimentos</h2>
+    <button *ngIf="!showInactive" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex justify-center items-center text-sm sm:text-base
+             transition-transform duration-200 transform hover:scale-105 hover:shadow-lg" (click)="openCreateModal()">
+      <i class="fas fa-plus mr-2"></i> Agregar Alimento
+    </button>
+  </div>
+
+  <!-- Filtro de búsqueda y botón de descarga -->
+  <div *ngIf="!showInactive" class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 mb-4">
+
+    <!-- Filtro -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <label for="foodTypeFilter" class="font-semibold text-sm sm:text-base">Buscar por tipo:</label>
+      <input id="foodTypeFilter" type="text"
+        class="border rounded px-3 py-2 text-sm sm:text-base w-full sm:w-auto flex-1" [(ngModel)]="foodTypeFilter"
+        placeholder="Escribe el tipo de alimento" />
+      <button class="bg-blue-500 text-white font-bold py-2 px-4 rounded text-sm sm:text-base
+               transition-transform duration-200 transform hover:scale-105 hover:shadow-lg" (click)="filterByType()">
+        Buscar
+      </button>
+    </div>
+
+    <!-- Botón de descargas -->
+    <div class="relative w-full sm:w-auto">
+      <button class="w-full sm:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded flex justify-center items-center text-sm sm:text-base
+               transition-transform duration-200 transform hover:scale-105 hover:shadow-lg" (click)="toggleDownload()">
+        Descargar <i class="fas fa-download ml-2"></i>
+      </button>
+
+      <div class="absolute right-0 mt-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10"
+        [ngClass]="{ 'hidden': !downloadOpen }">
+        <ul>
+          <li>
+            <button class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100
+                     transition-transform duration-200 transform hover:scale-105 hover:shadow-sm"
+              (click)="exportToPDF(); toggleDownload()">
+              PDF
+            </button>
+          </li>
+          <li>
+            <button class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100
+                     transition-transform duration-200 transform hover:scale-105 hover:shadow-sm"
+              (click)="exportToExcel(); toggleDownload()">
+              Excel
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 2 : Switcher de estado y tabla de datos -->
+<div class="container mx-auto my-6 p-4 bg-white shadow-md rounded-lg">
+
+  <!-- Switcher de Estado -->
+  <div class="flex items-center mb-4">
+    <span class="mr-2 font-semibold">Mostrar:</span>
+    <label class="relative inline-flex items-center cursor-pointer" for="toggleInactive">
+      <input type="checkbox" class="sr-only peer" id="toggleInactive" (change)="toggleFoodList()"
+        [checked]="!showInactive">
+      <div
+        class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+      </div>
+      <span class="ml-3 text-sm font-medium text-gray-900">
+        {{ showInactive ? 'Alimentos Inactivos' : 'Alimentos Activos' }}
+      </span>
+    </label>
+  </div>
+
+  <!-- Tabla de datos -->
+  <div class="overflow-auto">
+    <table class="min-w-full text-center border-separate" style="border-spacing: 0 10px;">
+      <thead>
+        <tr>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Tipo de Alimento</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Marca</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Empaque</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Cantidad</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">U. medida</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Fecha de Registro</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100 rounded-tr-lg">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Spinner de carga -->
+        <tr *ngIf="isLoading">
+          <td colspan="8" class="py-8 text-center">
+            <div class="flex justify-center">
+              <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+            </div>
+            <p class="mt-4 text-blue-600 font-medium">Cargando datos...</p>
+          </td>
+        </tr>
+        <!-- Mensaje si no hay datos -->
+        <tr *ngIf="!isLoading && getTableData().length === 0">
+          <td colspan="8" class="py-6 text-center text-gray-500 italic">
+            No hay datos que mostrar.
+          </td>
+        </tr>
+        <!-- Iterar sobre la lista de alimentos -->
+        <tr *ngFor="let food of getTableData()">
+          <td class="px-6 py-4 bg-gray-100" data-label="Tipo de Alimento">{{ food.foodType }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Marca">{{ food.foodBrand }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Empaque">{{ food.packaging }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Cantidad">{{ food.amount }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="U. medida">{{ food.unitMeasure }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Fecha de Registro">{{ food.entryDate | date:'dd/MMM/yy' }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Acciones">
+
+            <ng-container *ngIf="showInactive">
+              <button class="btn btn-sm transform transition-transform duration-200 hover:scale-110 hover:shadow-lg"
+                title="Restaurar" (click)="openModalRestore(food.idFood)">
+                <img src="https://img.icons8.com/?size=100&id=50827&format=png&color=40C057" alt="Restaurar"
+                  style="width: 20px; height: 20px;">
+              </button>
+              <button class="btn btn-sm transform transition-transform duration-200 hover:scale-110 hover:shadow-lg"
+                title="Eliminar físicamente" (click)="openModalDelete(food.idFood)">
+                <img src="https://img.icons8.com/?size=100&id=67884&format=png&color=FA5252" alt="Eliminar físicamente"
+                  style="width: 20px; height: 20px;">
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="!showInactive">
+              <button
+                class="btn btn-sm mr-2 transform transition-transform duration-200 hover:scale-110 hover:shadow-lg"
+                (click)="editFoodData(food)">
+                <img src="https://img.icons8.com/?size=100&id=H5dKJanZkZNk&format=png&color=228BE6" alt="Editar"
+                  style="width: 25px; height: 25px;">
+              </button>
+              <button class="btn btn-sm transform transition-transform duration-200 hover:scale-110 hover:shadow-lg"
+                title="Eliminar lógicamente" (click)="openModalDeactivate(food.idFood)">
+                <img src="https://img.icons8.com/?size=100&id=67884&format=png&color=12B886" alt="Eliminar lógicamente"
+                  style="width: 25px; height: 25px;">
+              </button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginador -->
+  <div class="flex justify-center mt-4 flex-wrap gap-2">
+    <button
+      class="px-3 py-2 bg-gray-300 rounded-md text-sm font-semibold hover:bg-gray-400 transform transition-transform duration-200 hover:scale-105 disabled:opacity-50"
+      [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+      Anterior
+    </button>
+
+    <button *ngFor="let page of getPages()"
+      class="px-3 py-2 rounded-md text-sm font-semibold transform transition-transform duration-200 hover:scale-105"
+      [ngClass]="{
+      'bg-blue-500 text-white': currentPage === page,
+      'bg-gray-200 hover:bg-gray-300': currentPage !== page
+    }" (click)="changePage(page)">
+      {{ page }}
+    </button>
+
+    <button
+      class="px-3 py-2 bg-gray-300 rounded-md text-sm font-semibold hover:bg-gray-400 transform transition-transform duration-200 hover:scale-105 disabled:opacity-50"
+      [disabled]="currentPage === getPages().length" (click)="changePage(currentPage + 1)">
+      Siguiente
+    </button>
+  </div>
+
+</div>
+
+<!-- Modal para insertar un nuevo registro -->
+<app-create-modal (foodAdded)="refreshCurrentFoodList()"></app-create-modal>
+
+<!-- Modal para editar un registro -->
+<app-edit-modal [foodToEdit]="foodToEdit" [isModalEdit]="isModalEdit"
+  (foodUpdated)="refreshCurrentFoodList()"></app-edit-modal>
+
+<!-- Modal para desactivar un alimento -->
+<app-deactivate-modal [foodIdToDeactivate]="foodIdToDeactivate" [isModalDeactivate]="isModalDeactivate"
+  (foodDeactivated)="refreshCurrentFoodList()"></app-deactivate-modal>
+
+<!-- Modal para restaurar un alimento -->
+<app-restore-modal [foodIdToRestore]="foodIdToRestore" [isModalRestore]="isModalRestore"
+  (foodRestored)="refreshCurrentFoodList()"></app-restore-modal>
+
+<!-- Modal para eliminar un alimento -->
+<app-delete-modal [foodIdToDelete]="foodIdToDelete" [isModalDelete]="isModalDelete"
+  (foodDeleted)="refreshCurrentFoodList()"></app-delete-modal>

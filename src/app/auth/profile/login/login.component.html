@@ -1,0 +1,160 @@
+<div class="flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 p-4 animate-gradient overflow-hidden w-full h-full min-h-screen">
+    <div class="w-full max-w-md px-4 sm:px-0">
+        <!-- Card container with enhanced futuristic styling -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20 transition-all duration-500 hover:shadow-blue-500/30 hover:border-blue-400/40 transform hover:scale-[1.01]">
+            <!-- Logo section with improved visual design -->
+            <div class="relative h-36 sm:h-48 flex items-center justify-center">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-800 opacity-90"></div>
+                <!-- Enhanced decorative elements -->
+                <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30">
+                    <div class="absolute top-4 left-4 w-20 h-20 rounded-full bg-white/40 blur-xl"></div>
+                    <div class="absolute bottom-4 right-8 w-28 h-28 rounded-full bg-blue-400/40 blur-xl"></div>
+                    <div class="absolute -left-8 bottom-8 w-24 h-24 rounded-full bg-indigo-500/30 blur-xl"></div>
+                    <div class="hidden sm:block absolute top-10 right-10 w-16 h-16 rounded-full bg-purple-400/30 blur-xl"></div>
+                </div>
+                <!-- Enhanced logo container with better animation -->
+                <div class="absolute h-28 w-28 sm:h-36 sm:w-36 bg-gradient-to-br from-white to-blue-50 rounded-full flex items-center justify-center shadow-2xl transform -translate-y-2 animate-float z-10 border-2 border-white/50">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-indigo-500/20 rounded-full animate-pulse-slow"></div>
+                    <img src="/assets/img/NPH.png" alt="NPH Logo" class="h-20 sm:h-28 w-auto object-contain transform transition-transform hover:scale-110 duration-300">
+                </div>
+            </div>
+            
+            <!-- Form section with improved spacing and visuals -->
+            <div class="px-6 sm:px-10 py-8 sm:py-10">
+                <h2 class="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-10 tracking-wide">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-white">Iniciar Sesión</span>
+                </h2>
+                
+                <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5 sm:space-y-6">
+                    <!-- Email field with enhanced styling -->
+                    <div class="group">
+                        <label for="email" class="block text-sm font-medium text-blue-100 mb-2 group-hover:text-blue-300 transition-colors">
+                            Correo electrónico
+                        </label>
+                        <div class="relative transition-all duration-300 group-focus-within:scale-[1.02]">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-blue-300/70">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                </svg>
+                            </div>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                formControlName="email" 
+                                class="w-full pl-10 pr-4 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all text-white placeholder-blue-200/50 backdrop-blur-sm shadow-inner shadow-black/5"
+                                placeholder="tu@email.com"
+                            >
+                        </div>
+                        <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-red-300 text-xs mt-2 pl-2 flex items-center animate-pulse">
+                            <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            Email es requerido
+                        </div>
+                    </div>
+                    
+                    <!-- Password field with enhanced styling -->
+                    <div class="group">
+                        <label for="password" class="block text-sm font-medium text-blue-100 mb-2 group-hover:text-blue-300 transition-colors">
+                            Contraseña
+                        </label>
+                        <div class="relative transition-all duration-300 group-focus-within:scale-[1.02]">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-blue-300/70">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </div>
+                            <input 
+                                [type]="showPassword ? 'text' : 'password'" 
+                                id="password" 
+                                formControlName="password" 
+                                class="w-full pl-10 pr-12 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all text-white placeholder-blue-200/50 backdrop-blur-sm shadow-inner shadow-black/5"
+                                placeholder="••••••••"
+                            >
+                            <button 
+                                type="button" 
+                                (click)="togglePasswordVisibility()"
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-300 hover:text-white transition-colors group"
+                            >
+                                <svg class="h-5 w-5 transform group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path *ngIf="!showPassword" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path *ngIf="!showPassword" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    <path *ngIf="showPassword" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7 1.275-4.057 5.065-7 9.543-7 1.052 0 2.062.18 3 .512v14.313zM9.879 9.879l4.242 4.242M9.88 9.88l-4.24 4.24m9.9-9.9l-4.24 4.24m-7.778 7.778l4.241-4.242m0 0l3.535-3.536"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-red-300 text-xs mt-2 pl-2 flex items-center animate-pulse">
+                            <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            Contraseña es requerida (mínimo 6 caracteres)
+                        </div>
+                    </div>
+                    
+                    <!-- Remember me checkbox with improved styling -->
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="rememberMe" 
+                                [(ngModel)]="rememberMe" 
+                                [ngModelOptions]="{standalone: true}"
+                                class="h-4 w-4 text-blue-600 rounded border-white/30 bg-white/10 focus:ring-blue-500 cursor-pointer"
+                            >
+                            <label for="rememberMe" class="ml-2 text-sm text-blue-100 hover:text-blue-200 transition-colors cursor-pointer">Recordarme</label>
+                        </div>
+                        <a href="#" class="text-sm text-blue-200 hover:text-white transition-colors">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    
+                    <!-- Error message with improved styling -->
+                    <div *ngIf="errorMessage" class="bg-red-900/50 border border-red-700 text-red-100 px-4 py-3 rounded-xl text-sm animate-fade-in mt-2">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>{{ errorMessage }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading indicator with improved animation -->
+                    <div *ngIf="isLoading" class="flex justify-center py-2">
+                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-300">
+                            <div class="h-6 w-6 rounded-full bg-blue-400/20"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit button with enhanced styling -->
+                    <button 
+                        type="submit" 
+                        [disabled]="form.invalid || isLoading" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:ring-4 focus:ring-blue-500/50 text-white font-medium py-3 sm:py-4 px-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] shadow-lg hover:shadow-blue-500/30 mt-4 group relative overflow-hidden"
+                    >
+                        <!-- Button background effect -->
+                        <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></span>
+                        <!-- Button content -->
+                        <span class="relative flex items-center justify-center">
+                            <span class="mr-2">Ingresar</span>
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </span>
+                    </button>
+                    
+                    <!-- Register link with enhanced styling -->
+                    <div class="text-center mt-6">
+                        <p class="text-blue-200/80 text-sm">
+                            ¿No tienes cuenta? 
+                            <a routerLink="/Register" class="text-white hover:text-blue-300 font-medium underline underline-offset-4 decoration-blue-400/50 hover:decoration-blue-300 transition-all relative group">
+                                Regístrate aquí
+                                <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gradient-to-r from-blue-400 to-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                            </a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Footer text with improved styling -->
+        <p class="text-center text-blue-200/50 text-xs mt-4">© 2025 NPH. Todos los derechos reservados.</p>
+    </div>
+</div>

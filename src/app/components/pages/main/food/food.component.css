@@ -1,0 +1,64 @@
+
+/* Responsive ajustes adicionales para tabla y botones */
+@media (max-width: 640px) {
+    table thead {
+        display: none;
+    }
+
+    table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        background-color: #f9fafb;
+        padding: 1rem;
+    }
+
+    table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border: none;
+        font-size: 0.875rem;
+    }
+
+    table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-transform: capitalize;
+        color: #374151;
+        /* Gray-700 */
+    }
+
+    .btn {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Ajustes para tablet (641px a 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    table th,
+    table td {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Escritorio grande (desde 1025px) */
+@media (min-width: 1025px) {
+    .btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    table th,
+    table td {
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+    }
+}

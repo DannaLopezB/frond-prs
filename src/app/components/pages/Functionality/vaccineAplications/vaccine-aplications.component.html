@@ -1,0 +1,337 @@
+<header class="relative bg-gradient-to-r from-blue-700 to-indigo-800 py-8 shadow-xl">
+  <div class="container mx-auto px-4">
+    <div class="relative z-10">
+      <h1 class="text-3xl font-extrabold text-white md:text-4xl">
+        <i class="fas fa-syringe mr-3"></i> Lista de Vacunas Aplicadas
+      </h1>
+      <p class="mt-2 text-blue-100">Gestiona de manera eficiente el registro de aplicaciones de vacunas</p>
+    </div>
+    
+    <!-- Patrones decorativos de fondo -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute right-10 top-5">
+        <i class="fas fa-vial text-6xl text-white"></i>
+      </div>
+      <div class="absolute left-1/4 bottom-2">
+        <i class="fas fa-feather text-4xl text-white"></i>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container mx-auto my-6 px-4">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-visible mb-6">
+    <div class="p-6">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+        <div class="flex-1">
+          <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-1">Registros de Vacunación</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Gestiona todas las aplicaciones de vacunas en los galpones</p>
+        </div>
+        
+        <!-- Contenedor de botones mejorado -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+          <!-- Dropdown de exportación con mejor posicionamiento -->
+          <div class="relative">
+            <button (click)="toggleExportDropdown($event)"
+              class="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+              <i class="fas fa-file-export mr-2"></i>
+              <span>Exportar</span>
+              <i class="fas fa-chevron-down ml-2 text-xs transition-transform duration-200"
+                 [class.rotate-180]="showExportDropdown"></i>
+            </button>
+
+            <!-- Dropdown menu con posicionamiento absoluto mejorado -->
+            <div *ngIf="showExportDropdown"
+              class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-700 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 overflow-hidden z-50"
+              style="position: absolute !important; z-index: 9999 !important;">
+              <div class="py-2">
+                <a (click)="confirmDownloadPDF(); showExportDropdown = false"
+                  class="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-300 cursor-pointer transition-colors duration-150 group">
+                  <i class="fas fa-file-pdf text-red-500 mr-3 w-5 group-hover:scale-110 transition-transform"></i> 
+                  <span class="font-medium">Descargar PDF</span>
+                </a>
+                <a (click)="confirmDownloadExcel(); showExportDropdown = false"
+                  class="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-300 cursor-pointer transition-colors duration-150 group">
+                  <i class="fas fa-file-excel text-green-500 mr-3 w-5 group-hover:scale-110 transition-transform"></i> 
+                  <span class="font-medium">Descargar Excel</span>
+                </a>
+                <a (click)="confirmDownloadCSV(); showExportDropdown = false"
+                  class="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-700 dark:hover:text-blue-300 cursor-pointer transition-colors duration-150 group">
+                  <i class="fas fa-file-csv text-blue-500 mr-3 w-5 group-hover:scale-110 transition-transform"></i> 
+                  <span class="font-medium">Descargar CSV</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón Nueva Aplicación -->
+          <button class="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105" 
+                  (click)="openModal()">
+            <i class="fas fa-plus mr-2"></i> 
+            <span>Nueva Aplicación</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Tarjeta de filtro 1: Estado -->
+        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Estado de Registro</h3>
+          <div class="flex items-center">
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" [(ngModel)]="activeActive" (ngModelChange)="toggleActive($event)">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {{ activeFilter === 'A' ? 'Activos' : 'Inactivos' }}
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tarjeta de filtro 2: Búsqueda por ID -->
+        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Buscar por ID</h3>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input type="text" placeholder="Ingrese ID de aplicación" 
+                   class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" 
+                   [(ngModel)]="applicationIdFilter" 
+                   (input)="filterApplications()">
+          </div>
+        </div>
+
+        <!-- Tarjeta de filtro 3: Búsqueda por cantidad -->
+        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Filtrar por Cantidad</h3>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-filter text-gray-400"></i>
+            </div>
+            <input type="text" placeholder="Ingrese cantidad" 
+                   class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" 
+                   [(ngModel)]="amountFilter" 
+                   (input)="filterApplications()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado de carga -->
+      <div *ngIf="isLoading" class="flex justify-center items-center py-8">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <span class="ml-3">Cargando aplicaciones de vacunas...</span>
+      </div>
+
+      <!-- Mensaje cuando no hay resultados -->
+      <div *ngIf="!isLoading && filteredApplications.length === 0" class="flex flex-col items-center justify-center py-12 px-4 text-center">
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-full p-4 mb-4">
+          <i class="fas fa-info-circle text-blue-500 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">No se encontraron registros</h3>
+        <p class="text-gray-500 dark:text-gray-400 max-w-md">No hay aplicaciones de vacunas que coincidan con los criterios de búsqueda actuales.</p>
+        <button class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors" (click)="confirmResetFilters()">
+          <i class="fas fa-redo-alt mr-2"></i>Restablecer filtros
+        </button>
+      </div>
+
+      <!-- LISTADO MEJORADO - VISTA ESCRITORIO -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4" *ngIf="!isLoading && filteredApplications.length > 0">
+        <div *ngFor="let application of paginatedVaccineApplications" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow relative">
+          <div class="flex justify-between items-start p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+           <div class="flex-1">
+  <h3 class="font-bold text-gray-900 dark:text-white text-lg break-words">{{ getNameIto(application.cycleLifeId, application) }}</h3>
+  <p class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+    <i class="fas fa-warehouse mr-1.5 text-gray-400"></i> 
+    Galpon: {{ application.henId }}
+  </p>
+</div>
+
+            <span [ngClass]="application.active === 'A' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'" 
+                  class="px-2.5 py-1 rounded-full text-xs font-medium flex items-center">
+              <i [ngClass]="application.active === 'A' ? 'fas fa-check-circle mr-1' : 'fas fa-times-circle mr-1'"></i>
+              {{ application.active === 'A' ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+          
+          <div class="p-4 grid grid-cols-2 gap-y-3 text-sm">
+            <div class="col-span-2 border-b border-gray-100 dark:border-gray-700 pb-2 mb-1">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
+                  <span class="font-semibold text-gray-700 dark:text-gray-300">Fecha Aplicación:</span>
+                </div>
+                <div class="text-gray-800 dark:text-gray-200">{{ formatDate(application.endDate) }}</div>
+              </div>
+            </div>
+
+            <div class="col-span-2 border-b border-gray-100 dark:border-gray-700 pb-2 mb-1">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <i class="fas fa-calendar-plus text-indigo-500 mr-2"></i>
+                  <span class="font-semibold text-gray-700 dark:text-gray-300">Fecha Registro:</span>
+                </div>
+                <div class="text-gray-800 dark:text-gray-200">{{ formatDate(application.dateRegistration) }}</div>
+              </div>
+            </div>
+
+             <div class="flex items-center">
+              <i class="fas fa-flask text-purple-500 mr-2"></i>
+              <span class="font-semibold text-gray-700 dark:text-gray-300">Administrada:</span>
+            </div>
+            <div class="text-right text-gray-800 dark:text-gray-200">{{ application.viaApplication }}</div>
+            
+            <div class="flex items-center">
+              <i class="fas fa-hourglass-half text-amber-500 mr-2"></i>
+              <span class="font-semibold text-gray-700 dark:text-gray-300">Edad S/D:</span>
+            </div>
+            <div class="text-right text-gray-800 dark:text-gray-200">{{ application.timesInWeeks }}</div>
+            
+            <div class="flex items-center">
+              <i class="fas fa-flask text-purple-500 mr-2"></i>
+              <span class="font-semibold text-gray-700 dark:text-gray-300">Cantidad:</span>
+            </div>
+            <div class="text-right text-gray-800 dark:text-gray-200">{{ application.amount }}</div>
+            
+            <div class="flex items-center">
+              <i class="fas fa-tags text-green-500 mr-2"></i>
+              <span class="font-semibold text-gray-700 dark:text-gray-300">Costo:</span>
+            </div>
+            <div class="text-right text-gray-800 dark:text-gray-200">S/ {{ application.costApplication }}</div>
+            
+            <div class="flex items-center">
+              <i class="fas fa-feather-alt text-orange-500 mr-2"></i>
+              <span class="font-semibold text-gray-700 dark:text-gray-300">Cant. Gallinas:</span>
+            </div>
+            <div class="text-right text-gray-800 dark:text-gray-200">{{ application.quantityBirds }}</div>
+
+            <div class="flex items-center">
+              <i class="fas fa-feather-alt text-orange-500 mr-2"></i>
+              <span class="font-semibold text-gray-700 dark:text-gray-300">Correo Electronico:</span>
+            </div>
+            <div class="text-right text-gray-800 dark:text-gray-200">{{ application.email}}</div>
+            
+            
+            <div class="col-span-2 border-t border-gray-100 dark:border-gray-700 mt-2 pt-3">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <i class="fas fa-calculator text-blue-600 mr-2"></i>
+                  <span class="font-semibold text-gray-700 dark:text-gray-300">Total:</span>
+                </div>
+                <div class="text-right font-bold text-lg text-blue-700 dark:text-blue-400">
+                  S/ {{ calculateTotal(application.costApplication, application.quantityBirds) | number:'1.2-2' }}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Botones de acción con confirmaciones -->
+          <div class="border-t border-gray-100 dark:border-gray-700 p-3 flex justify-center gap-2 bg-gray-50 dark:bg-gray-800">
+            <!-- Botón Editar con confirmación -->
+            <button *ngIf="application.active === 'A'" 
+                    class="bg-amber-500 hover:bg-amber-600 text-white rounded p-1.5 flex items-center justify-center transition-all duration-200 shadow-sm text-xs hover:shadow-md hover:scale-105"
+                    (click)="editApplicationDetails(application)"
+                    title="Editar aplicación">
+              <i class="fas fa-edit mr-1"></i> Editar
+            </button>
+            
+            <!-- Botón Eliminar con confirmación -->
+            <button *ngIf="application.active === 'A'" 
+                    class="bg-red-500 hover:bg-red-600 text-white rounded p-1.5 flex items-center justify-center transition-all duration-200 shadow-sm text-xs hover:shadow-md hover:scale-105"
+                    (click)="inactivateApplication(application.applicationId)"
+                    title="Inactivar aplicación">
+              <i class="fas fa-trash-alt mr-1"></i> Eliminar
+            </button>
+            
+            <!-- Botón Restaurar con confirmación -->
+            <button *ngIf="application.active === 'I'" 
+                    class="bg-green-500 hover:bg-green-600 text-white rounded p-1.5 flex items-center justify-center transition-all duration-200 shadow-sm text-xs hover:shadow-md hover:scale-105"
+                    (click)="activateApplication(application.applicationId)"
+                    title="Restaurar aplicación">
+              <i class="fas fa-undo-alt mr-1"></i> Restaurar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginación -->
+      <div class="flex justify-center mt-6" *ngIf="filteredApplications.length > 0 && getPages().length > 1">
+        <nav class="bg-white dark:bg-gray-800 px-4 py-3 rounded-md shadow">
+          <ul class="flex items-center">
+            <li>
+              <button 
+                [disabled]="currentPage === 1"
+                [ngClass]="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'"
+                class="px-3 py-1 rounded-md text-gray-600 dark:text-gray-300"
+                (click)="cambiarPagina(currentPage - 1)">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+            </li>
+            <li *ngFor="let page of getPages().slice(0, 5)">
+              <button 
+                [ngClass]="currentPage === page ? 'bg-blue-500 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                class="px-3 py-1 mx-1 rounded-md"
+                (click)="cambiarPagina(page)">
+                {{ page }}
+              </button>
+            </li>
+            <li>
+              <button 
+                [disabled]="currentPage === getPages().length || getPages().length === 0"
+                [ngClass]="currentPage === getPages().length || getPages().length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'"
+                class="px-3 py-1 rounded-md text-gray-600 dark:text-gray-300"
+                (click)="cambiarPagina(currentPage + 1)">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Botón Cargar Más -->
+      <div class="text-center mt-6" *ngIf="currentPage < getPages().length">
+        <button 
+          class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-4 rounded-lg transition-colors"
+          (click)="cargarMas()">
+          <i class="fas fa-spinner mr-2"></i> Cargar más registros
+        </button>
+      </div>
+      
+      <!-- Mensaje de feedback mejorado -->
+      <div *ngIf="showFeedback" class="fixed bottom-4 right-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-lg shadow-lg z-50 max-w-md transform transition-all duration-300 ease-out" 
+           [ngClass]="{'translate-y-0 opacity-100': showFeedback, 'translate-y-10 opacity-0': !showFeedback}">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 mr-3">
+            <i class="fas fa-check-circle text-2xl"></i>
+          </div>
+          <div class="flex-1 pr-3">
+            <p class="font-medium">{{ feedbackMessage }}</p>
+          </div>
+          <div>
+            <button (click)="closeFeedback()" class="rounded-full p-1 hover:bg-white/20 transition-colors">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+<!-- Modal de Aplicaciones - Solo se renderiza cuando isModalOpen es true -->
+<app-modal-applications 
+  [isModalOpen]="isModalOpen"
+  [isEditMode]="isEditMode"
+  [selectedApplication]="applicationForm"
+  (applicationAdded)="getApplications()"
+  (applicationUpdated)="getApplications()"
+  (modalClosed)="closeModal()">
+</app-modal-applications>
+
+<!-- Modal de Confirmación -->
+<app-confirmation-modal
+  [isOpen]="showConfirmationModal"
+  [config]="confirmationConfig"
+  (confirmed)="onConfirmAction()"
+  (cancelled)="onCancelAction()">
+</app-confirmation-modal>

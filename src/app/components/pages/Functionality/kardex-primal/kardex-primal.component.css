@@ -1,0 +1,421 @@
+/* Enhanced Responsive Scrollbar Styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #e5e7eb;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+@media (min-width: 640px) {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+}
+
+.scrollbar-thumb-blue-500::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+}
+
+.scrollbar-track-gray-200::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+/* Enhanced Animation Classes */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Responsive Table Enhancements */
+@media (min-width: 1024px) {
+  .table-fixed {
+    table-layout: fixed;
+  }
+
+  .table-fixed th,
+  .table-fixed td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Mobile Responsive Enhancements */
+@media (max-width: 1023px) {
+  .mobile-scroll-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-card {
+    margin-bottom: 1rem;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+  }
+
+  .mobile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Extra Small Mobile Optimizations */
+@media (max-width: 479px) {
+  .mobile-card {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .mobile-card .bg-white\/60 {
+    padding: 0.5rem;
+  }
+
+  .mobile-value-row {
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-value-label {
+    font-size: 0.75rem;
+  }
+
+  .mobile-value-amount {
+    font-size: 0.875rem;
+  }
+}
+
+/* Mobile Number Formatting Enhancements */
+@media (max-width: 767px) {
+  .mobile-number-display {
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Courier New", monospace;
+    letter-spacing: 0.5px;
+    text-align: right;
+  }
+
+  .mobile-currency {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .mobile-quantity {
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.2;
+  }
+
+  .mobile-total {
+    font-weight: 800;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Enhanced spacing for mobile cards */
+  .mobile-value-row {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-value-row:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(2px);
+  }
+
+  .mobile-value-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    flex: 1;
+  }
+
+  .mobile-value-amount {
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+    font-weight: 700;
+    text-align: right;
+    min-width: fit-content;
+    margin-left: 1rem;
+  }
+
+  /* Total row emphasis */
+  .mobile-total-row {
+    border: 2px solid currentColor;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-total-row .mobile-value-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .mobile-total-row .mobile-value-amount {
+    font-size: 1.125rem;
+    font-weight: 800;
+  }
+}
+
+/* Enhanced contrast for better readability */
+@media (max-width: 767px) {
+  .text-green-700 {
+    color: #15803d !important;
+  }
+  .text-red-700 {
+    color: #dc2626 !important;
+  }
+  .text-blue-700 {
+    color: #1d4ed8 !important;
+  }
+  .text-green-800 {
+    color: #166534 !important;
+  }
+  .text-red-800 {
+    color: #991b1b !important;
+  }
+  .text-blue-800 {
+    color: #1e40af !important;
+  }
+}
+
+/* Calendar Modal Responsive Enhancements */
+@media (max-width: 639px) {
+  .calendar-modal {
+    margin: 0.75rem;
+    max-height: calc(100vh - 1.5rem);
+    overflow-y: auto;
+  }
+
+  .calendar-modal .months-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .calendar-modal .month-button {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .calendar-modal .action-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .calendar-modal .action-button {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Desktop Responsive Enhancements */
+@media (min-width: 1024px) {
+  .desktop-scroll-container {
+    max-height: 80vh;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: white;
+  }
+
+  .table-hover-effect:hover {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+  }
+}
+
+/* Enhanced Focus States for Accessibility */
+.focus-enhanced:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+  
+  .hover\:-translate-y-1:hover {
+    transform: none;
+  }
+  
+  button:active {
+    transform: scale(0.95);
+  }
+}
+
+/* Print Optimizations */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .movements-table {
+    font-size: 10px;
+  }
+
+  .movements-table th,
+  .movements-table td {
+    padding: 4px 2px;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .movements-table {
+    border: 2px solid #000;
+  }
+
+  .movements-table th {
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+  }
+
+  .movements-table td {
+    border: 1px solid #000;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in {
+    animation: none;
+    opacity: 1;
+  }
+
+  .transition-all {
+    transition: none;
+  }
+
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #374151;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  }
+
+  .movements-table {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+
+  .movements-table th {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    color: #f9fafb;
+  }
+
+  .movements-table td {
+    border-color: #4b5563;
+  }
+}
+
+/* Calendar Modal Specific Responsive Styles */
+.calendar-modal-overlay {
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .calendar-modal-overlay {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .calendar-modal-overlay {
+    padding: 1.5rem;
+  }
+}
+
+/* Improved touch targets for mobile */
+@media (max-width: 767px) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .calendar-modal .month-button {
+    min-height: 48px;
+    touch-action: manipulation;
+  }
+  
+  .action-button {
+    min-height: 48px;
+    touch-action: manipulation;
+  }
+}

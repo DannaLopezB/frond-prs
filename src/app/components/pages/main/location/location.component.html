@@ -1,0 +1,252 @@
+<!-- HTML Responsive con Botones de Exportación -->
+<header class="bg-white shadow-md py-4">
+  <div class="w-full px-4">
+    <h1 class="text-2xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+      <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+        💠 Ubicaciones
+      </span>
+    </h1>
+  </div>
+</header>
+
+<div class="container mx-auto my-4 p-3 md:p-4 bg-white shadow-md rounded-lg">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+    <h2 class="text-lg md:text-xl font-bold">Lista de Ubicaciones</h2>
+    
+    <!-- Contenedor de botones -->
+    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+      <!-- Botones de Exportación -->
+      <div class="flex gap-2">
+        <button (click)="exportToPDF()" 
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 md:px-4 rounded flex items-center text-sm md:text-base">
+          <i class="fas fa-file-pdf mr-2"></i> PDF
+        </button>
+        <button (click)="exportToExcel()" 
+                class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 md:px-4 rounded flex items-center text-sm md:text-base">
+          <i class="fas fa-file-excel mr-2"></i> Excel
+        </button>
+      </div>
+      
+      <!-- Botón Agregar -->
+      <button (click)="abrirModal()" 
+              class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 md:px-4 rounded flex items-center text-sm md:text-base w-full sm:w-auto justify-center">
+        <i class="fas fa-plus mr-2"></i> Agregar Ubicación
+      </button>
+    </div>
+  </div>
+
+  <!-- Switcher de Estado -->
+  <div class="flex items-center mb-4">
+      <span class="mr-2 font-semibold text-sm md:text-base">Mostrar:</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" class="sr-only peer" [(ngModel)]="statusActive" (change)="toggleStatus()">
+          <div class="w-11 h-6 rounded-full transition-colors duration-300 ease-in-out"
+              [ngClass]="statusActive ? 'bg-green-500' : 'bg-red-500'">
+              <div class="absolute top-[2px] left-[2px] h-5 w-5 bg-white border rounded-full transition-transform duration-300"
+                  [ngClass]="statusActive ? 'translate-x-5' : 'translate-x-0'">
+              </div>
+          </div>
+          <span class="ml-3 text-xs md:text-sm font-medium text-gray-900">
+              {{ statusActive ? 'Activos' : 'Inactivos' }}
+          </span>
+      </label>
+  </div>
+
+  <!-- Tabla para dispositivos medianos y grandes -->
+  <div class="hidden md:block overflow-x-auto">
+    <table class="min-w-full border-separate border-spacing-y-2 text-sm md:text-base">
+      <thead>
+        <tr>
+          <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100">País</th>
+          <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100">Departamento</th>
+          <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100">Provincia</th>
+          <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100">Distrito</th>
+          <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100">Estado</th>
+          <th class="px-2 md:px-4 py-2 md:py-3 font-semibold text-blue-900 bg-blue-100">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ubicacion of paginatedUbicaciones" class="bg-gray-50 hover:bg-gray-100 text-center">
+          <td class="px-2 md:px-4 py-2 md:py-3">{{ ubicacion.country }}</td>
+          <td class="px-2 md:px-4 py-2 md:py-3">{{ ubicacion.department }}</td>
+          <td class="px-2 md:px-4 py-2 md:py-3">{{ ubicacion.province }}</td>
+          <td class="px-2 md:px-4 py-2 md:py-3">{{ ubicacion.district }}</td>
+          <td class="px-2 md:px-4 py-2 md:py-3">
+            <span 
+              class="inline-flex w-4 h-4 md:w-5 md:h-5 rounded-full"
+              [ngClass]="{'bg-green-500': ubicacion.status === 'A', 'bg-red-500': ubicacion.status === 'I'}">
+            </span>
+          </td>
+          <td class="px-2 md:px-4 py-2 md:py-3 flex justify-center space-x-2">
+            <button *ngIf="ubicacion.status === 'A'" class="text-blue-500 hover:text-blue-700 text-lg" (click)="editarUbicacion(ubicacion)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button 
+              *ngIf="ubicacion.status === 'A'" 
+              class="text-red-500 hover:text-red-700 text-lg" 
+              (click)="eliminarUbicacion(ubicacion.id)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <button 
+              *ngIf="ubicacion.status === 'I'" 
+              class="text-green-500 hover:text-green-700 text-lg" 
+              (click)="restaurarUbicacion(ubicacion.id)">
+              <i class="fas fa-undo"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tarjetas para dispositivos móviles -->
+  <div class="md:hidden space-y-3">
+    <div *ngFor="let ubicacion of paginatedUbicaciones" class="bg-gray-50 p-3 rounded-lg shadow-sm">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="font-bold text-blue-900">{{ ubicacion.province }}</h3>
+        <span 
+          class="inline-flex w-4 h-4 rounded-full"
+          [ngClass]="{'bg-green-500': ubicacion.status === 'A', 'bg-red-500': ubicacion.status === 'I'}">
+        </span>
+      </div>
+      <div class="grid grid-cols-2 gap-1 text-sm mb-2">
+        <div class="text-gray-600">País:</div>
+        <div>{{ ubicacion.country }}</div>
+        <div class="text-gray-600">Departamento:</div>
+        <div>{{ ubicacion.department }}</div>
+        <div class="text-gray-600">Distrito:</div>
+        <div>{{ ubicacion.district }}</div>
+      </div>
+      <div class="flex justify-end space-x-3 pt-2 border-t">
+        <button *ngIf="ubicacion.status === 'A'" class="text-blue-500 hover:text-blue-700" (click)="editarUbicacion(ubicacion)">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button 
+          *ngIf="ubicacion.status === 'A'" 
+          class="text-red-500 hover:text-red-700" 
+          (click)="eliminarUbicacion(ubicacion.id)">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button 
+          *ngIf="ubicacion.status === 'I'" 
+          class="text-green-500 hover:text-green-700" 
+          (click)="restaurarUbicacion(ubicacion.id)">
+          <i class="fas fa-undo"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-center mt-4 space-x-2 md:space-x-3 text-sm md:text-base">
+    <button 
+      class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1.5 md:py-2 px-3 md:px-4 rounded disabled:opacity-50"
+      (click)="prevPage()"
+      [disabled]="page === 1">
+      Anterior
+    </button>
+
+    <span class="font-semibold text-gray-700 flex items-center">
+      Página {{ page }} de {{ totalPages }}
+    </span>
+
+    <button 
+      class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1.5 md:py-2 px-3 md:px-4 rounded disabled:opacity-50"
+      (click)="nextPage()"
+      [disabled]="page === totalPages">
+      Siguiente
+    </button>
+  </div>
+</div>
+
+<!-- Modal Responsive -->
+<div *ngIf="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 transition-opacity duration-300 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden transition-all duration-300 transform">
+    <!-- Encabezado con ícono -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 md:p-6 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <h2 class="text-xl md:text-2xl font-semibold text-white">
+        {{ editMode ? 'Editar Ubicación' : 'Agregar Ubicación' }}
+      </h2>
+    </div>
+    
+    <!-- Formulario -->
+    <form [formGroup]="ubigeoForm" (ngSubmit)="guardarUbicacion()" class="p-4 md:p-6 space-y-4 md:space-y-5">
+      <!-- Campo País -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          País
+        </label>
+        <input type="text" formControlName="country" 
+               class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+               [class.border-red-500]="ubigeoForm.get('country')?.invalid && ubigeoForm.get('country')?.touched">
+        <p *ngIf="ubigeoForm.get('country')?.invalid && ubigeoForm.get('country')?.touched" 
+           class="mt-1 text-xs md:text-sm text-red-600">
+          Por favor ingrese un país válido
+        </p>
+      </div>
+      
+      <!-- Campo Departamento -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          Departamento
+        </label>
+        <input type="text" formControlName="department" 
+               class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base">
+      </div>
+      
+      <!-- Campo Provincia -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          Provincia
+        </label>
+        <input type="text" formControlName="province" 
+               class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base">
+      </div>
+      
+      <!-- Campo Distrito -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Distrito
+        </label>
+        <input type="text" formControlName="district" 
+               class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base">
+      </div>
+      
+      <!-- Botones -->
+      <div class="flex justify-end space-x-2 md:space-x-3 pt-4">
+        <button type="button" 
+                (click)="cerrarModal()" 
+                class="px-3 md:px-5 py-2 md:py-2.5 text-xs md:text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Cancelar
+        </button>
+        <button type="submit" 
+                class="px-3 md:px-5 py-2 md:py-2.5 text-xs md:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition
+                        disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                [disabled]="ubigeoForm.invalid">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          {{ editMode ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

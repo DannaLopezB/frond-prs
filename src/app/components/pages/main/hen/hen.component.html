@@ -1,0 +1,300 @@
+<header class="bg-white shadow-md py-4">
+  <div class="w-full px-4 text-center">
+    <h1 class="text-3xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+      <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+        GALLINAS
+      </span>
+    </h1>
+  </div>
+</header>
+
+<div class="max-w-5xl mx-auto my-6 p-4 bg-white shadow-md rounded-lg">
+  <div class="flex flex-col md:flex-row md:justify-between items-center mb-4">
+    <h2 class="text-xl font-bold text-center md:text-left mb-2 md:mb-0">Lista de Gallinas</h2>
+    <div class="flex flex-col md:flex-row gap-2">
+      <button
+        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-4 rounded flex items-center text-base"
+        (click)="abrirModalAgregar()">
+        <i class="fas fa-plus mr-2"></i> Agregar Gallina
+      </button>
+      <!-- Dropdown de Exportación -->
+      <div class="relative inline-block export-dropdown-container h-12">
+        <button (click)="toggleExportDropdown($event)"
+          class="flex items-center h-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-base">
+          <i class="fas fa-file-export mr-2"></i>
+          <span class="hidden md:inline">Exportar</span>
+          <i class="fas fa-chevron-down ml-2 text-xs"></i>
+        </button>
+        <div *ngIf="showExportDropdown"
+          class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+          <div class="py-1">
+            <a (click)="downloadPDF(); showExportDropdown = false"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+              <i class="fas fa-file-pdf text-red-500 mr-2"></i> PDF
+            </a>
+            <a (click)="downloadExcel(); showExportDropdown = false"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+              <i class="fas fa-file-excel text-green-500 mr-2"></i> Excel
+            </a>
+            <a (click)="downloadCSV(); showExportDropdown = false"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+              <i class="fas fa-file-csv text-blue-500 mr-2"></i> CSV
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row md:items-center mb-4 gap-2">
+    <label class="font-semibold">Buscar por fecha:</label>
+    <input type="date" class="border p-2 rounded" [(ngModel)]="fechaBusqueda" />
+    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" (click)="buscarGallinasPorFecha()">
+      Buscar
+    </button>
+  </div>
+
+  <div class="flex items-center mb-4">
+    <span class="mr-2 font-semibold">Mostrar:</span>
+    <label class="relative inline-flex items-center cursor-pointer">
+      <input type="checkbox" class="sr-only peer" [(ngModel)]="statusActive" (change)="toggleStatus()" />
+      <div
+        class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+      </div>
+      <span class="ml-3 text-sm font-medium text-gray-900">{{
+        statusFilter === "A" ? "Activos" : "Inactivos"
+        }}</span>
+    </label>
+  </div>
+
+  <!-- Modal edición - MEJORADO -->
+  <div *ngIf="gallinaSeleccionada" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div
+      class="bg-gradient-to-b from-blue-50 to-white p-0 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+      <div class="bg-blue-600 py-4 px-6">
+        <h3 class="text-xl font-bold text-white flex items-center">
+          <i class="fas fa-feather-alt mr-2"></i> Editar Gallina
+        </h3>
+      </div>
+
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Gallina</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-dove text-gray-400"></i>
+            </div>
+            <input type="text"
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Ej: Ponedora, Carioquitas, etc." [(ngModel)]="gallinaSeleccionada.henType" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de llegada</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-calendar text-gray-400"></i>
+            </div>
+            <input type="date"
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              [(ngModel)]="gallinaSeleccionada.arrivalDate" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-hashtag text-gray-400"></i>
+            </div>
+            <input type="number"
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              [(ngModel)]="gallinaSeleccionada.quantity" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Galpón</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-home text-gray-400"></i>
+            </div>
+            <select
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+              [(ngModel)]="gallinaSeleccionada.shedId">
+              <option *ngFor="let shed of sheds" [value]="shed.id">{{ shed.name }}</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <i class="fas fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-toggle-on text-gray-400"></i>
+            </div>
+            <select
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+              [(ngModel)]="gallinaSeleccionada.status">
+              <option value="A">Activo</option>
+              <option value="I">Inactivo</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <i class="fas fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6">
+          <button
+            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors flex items-center"
+            (click)="gallinaSeleccionada = null">
+            <i class="fas fa-times mr-2"></i> Cancelar
+          </button>
+          <button
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center"
+            (click)="guardarEdicion()">
+            <i class="fas fa-save mr-2"></i> Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal agregar - MEJORADO -->
+  <div *ngIf="mostrarModalAgregar" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div
+      class="bg-gradient-to-b from-green-50 to-white p-0 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+      <div class="bg-green-600 py-4 px-6">
+        <h3 class="text-xl font-bold text-white flex items-center">
+          <i class="fas fa-plus-circle mr-2"></i> Agregar Gallina
+        </h3>
+      </div>
+
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Gallina</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-dove text-gray-400"></i>
+            </div>
+            <input type="text"
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              placeholder="Ej: Ponedora, Carioquitas, etc." [(ngModel)]="nuevaGallina.henType" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de llegada</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-calendar text-gray-400"></i>
+            </div>
+            <input type="date"
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              [(ngModel)]="nuevaGallina.arrivalDate" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-hashtag text-gray-400"></i>
+            </div>
+            <input type="number"
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              [(ngModel)]="nuevaGallina.quantity" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Galpón</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <i class="fas fa-home text-gray-400"></i>
+            </div>
+            <select
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none bg-white"
+              [(ngModel)]="nuevaGallina.shedId">
+              <option *ngFor="let shed of sheds" [value]="shed.id">{{ shed.name }}</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <i class="fas fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6">
+          <button
+            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors flex items-center"
+            (click)="cerrarModalAgregar()">
+            <i class="fas fa-times mr-2"></i> Cancelar
+          </button>
+          <button
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center"
+            (click)="guardarNuevaGallina()">
+            <i class="fas fa-check mr-2"></i> Agregar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full border-separate border-spacing-y-2 text-base text-center">
+      <thead>
+        <tr>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100">Tipo de Gallina</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100">Fecha de llegada</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100">Cantidad</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100">Galpón</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let gallina of paginaGallinas" class="bg-gray-50 hover:bg-gray-100 text-center">
+          <td class="px-4 py-3">{{ gallina.henType }}</td>
+          <td class="px-4 py-3">{{ gallina.arrivalDate | date : "dd-MMM-yyyy" : "es-ES" }}</td>
+          <td class="px-4 py-3">{{ gallina.quantity }}</td>
+          <td class="px-4 py-3">{{ getShedName(gallina.shedId) }}</td>
+          <td class="px-4 py-3 flex justify-center space-x-3">
+            <ng-container *ngIf="gallina.status === 'A'">
+              <button class="text-blue-500 hover:text-blue-700 text-lg" (click)="editarGallina(gallina)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button *ngIf="gallina.id !== undefined" class="text-red-500 hover:text-red-700 text-lg"
+                (click)="eliminarGallina(gallina.id)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="gallina.status === 'I'">
+              <button *ngIf="gallina.id !== undefined" class="text-green-500 hover:text-green-700 text-lg"
+                (click)="restaurarGallina(gallina.id)">
+                <i class="fas fa-undo"></i>
+              </button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="flex justify-center mt-4 space-x-3 text-base">
+      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
+        (click)="prevPage()" [disabled]="page === 1">
+        Previous
+      </button>
+
+      <span class="font-semibold text-gray-700">
+        Página {{ page }} de {{ totalPages }}
+      </span>
+
+      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
+        (click)="nextPage()" [disabled]="page === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>

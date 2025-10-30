@@ -1,0 +1,152 @@
+<header class="bg-white shadow-md py-4">
+  <div class="w-full px-4">
+    <h1 class="text-3xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+      <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+        CICLO DE VIDA
+      </span>
+    </h1>
+  </div>
+</header>
+
+<div class="container mx-auto my-6 p-4 bg-white shadow-md rounded-lg">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Lista de Ciclos</h2>
+
+    <div class="flex items-center gap-2">
+      <button (click)="abrirModalCrear()"
+        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-4 rounded flex items-center text-base h-12">
+        <i class="fas fa-plus mr-2"></i> Agregar Ciclo
+      </button>
+
+      <div class="relative inline-block export-dropdown-container h-12">
+        <button (click)="toggleExportDropdown($event)"
+          class="flex items-center h-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-base">
+          <i class="fas fa-file-export mr-2"></i>
+          <span class="hidden md:inline">Exportar</span>
+          <i class="fas fa-chevron-down ml-2 text-xs"></i>
+        </button>
+
+        <div *ngIf="showExportDropdown"
+          class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+          <div class="py-1">
+            <a (click)="downloadPDF(); showExportDropdown = false"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+              <i class="fas fa-file-pdf text-red-500 mr-2"></i> PDF
+            </a>
+            <a (click)="downloadExcel(); showExportDropdown = false"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+              <i class="fas fa-file-excel text-green-500 mr-2"></i> Excel
+            </a>
+            <a (click)="downloadCSV(); showExportDropdown = false"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+              <i class="fas fa-file-csv text-blue-500 mr-2"></i> CSV
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center mb-4">
+    <label class="mr-2 font-semibold">Buscar por Tipo de Hito:</label>
+    <input type="text" class="border p-2 rounded" [(ngModel)]="tipoBusqueda">
+    <button class="ml-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" (click)="buscarCicloPorTipo()">
+      Buscar
+    </button>
+  </div>
+  
+  <div class="flex items-center mb-4">
+    <span class="mr-2 font-semibold">Mostrar:</span>
+    <label class="relative inline-flex items-center cursor-pointer">
+      <input type="checkbox" class="sr-only peer" [(ngModel)]="statusActive" (change)="toggleStatus()">
+      <div
+        class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+      </div>
+      <span class="ml-3 text-sm font-medium text-gray-900">{{ statusFilter === 'A' ? 'Activos' : 'Inactivos' }}</span>
+    </label>
+  </div>
+
+ <app-modal-lifecycle 
+  [mostrarModalCrear]="mostrarModalCrear"
+  [mostrarModalEdicion]="mostrarModalEdicion"
+  [mostrarModalDetalle]="mostrarModalDetalle"
+  [cicloSeleccionado]="cicloSeleccionado"
+  [cicloDetalle]="cicloDetalle"
+  [nuevoCiclo]="nuevoCiclo"
+  [hens]="hens"
+  [vacunas]="vacunas"
+  [alimentos]="alimentos"
+  [validationErrors]="validationErrors"
+  [validFields]="validFields"
+  [isSaving]="isSaving"
+  (cerrarModalCrear)="cerrarModalCrear()"
+  (cerrarModalEdicion)="cerrarModalEdicion()"
+  (cerrarModalDetalle)="cerrarModalDetalle()"
+  (onTipoItoChange)="onTipoItoChange()"
+  (onTipoItoChangeEdicion)="onTipoItoChangeEdicion()"
+  (crearCiclo)="crearCiclo()"
+  (guardarEdicion)="guardarEdicion()">
+</app-modal-lifecycle>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full border-separate border-spacing-y-2 text-base">
+      <thead>
+        <tr>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Galpón</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Tipo de HiTO</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Nombre de HiTO</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Tipo de Tiempo</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Tiempo</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Fecha de aplicación</th>
+          <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ciclo of paginaCiclos" class="bg-gray-50 hover:bg-gray-100 text-center">
+          <td class="px-4 py-3">Galpón {{ ciclo?.henId }}</td>
+          <td class="px-4 py-3">{{ ciclo.typeIto }}</td>
+          <td class="px-4 py-3">{{ ciclo.nameIto }}</td>
+          <td class="px-4 py-3">{{ ciclo.typeTime }}</td>
+          <td class="px-4 py-3">{{ ciclo.times }}</td>
+          <td class="px-4 py-3">{{ ciclo.endDate | date:'dd-MMM-yyyy' : 'es-ES' }}</td>
+          <td class="px-4 py-3 flex justify-center space-x-2">
+            <button class="text-blue-400 hover:text-blue-600 text-lg" (click)="abrirModalDetalle(ciclo)">
+              <i class="fas fa-eye"></i>
+            </button>
+            <ng-container *ngIf="ciclo.status === 'A'">
+              <button class="text-blue-500 hover:text-blue-700 text-lg" (click)="editarCiclo(ciclo)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button *ngIf="ciclo.id !== undefined" class="text-red-500 hover:text-red-700 text-lg"
+                (click)="eliminarCiclo(ciclo.id)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="ciclo.status === 'I'">
+              <button *ngIf="ciclo.id !== undefined" class="text-green-500 hover:text-green-700 text-lg"
+                (click)="restaurarCiclo(ciclo.id)">
+                <i class="fas fa-undo"></i>
+              </button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="flex justify-center mt-4 space-x-3 text-base">
+      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
+        (click)="prevPage()" [disabled]="page === 1">
+        Previous
+      </button>
+
+      <span class="font-semibold text-gray-700">
+        Página {{ page }} de {{ totalPages }}
+      </span>
+
+      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded disabled:opacity-50"
+        (click)="nextPage()" [disabled]="page === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>

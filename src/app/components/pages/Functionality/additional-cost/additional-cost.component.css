@@ -1,0 +1,49 @@
+/* Estilos para el componente additional-cost */
+
+/* Estilos para las tarjetas en móvil */
+@media (max-width: 768px) {
+        .card-title {
+        font-size: 1.1rem;
+        }
+        
+        .card-label {
+        font-size: 0.7rem;
+        margin-bottom: 0.1rem;
+        }
+        
+        .card-value {
+        font-size: 0.9rem;
+        }
+    }
+    
+    /* Animación de carga */
+    @keyframes pulse {
+        0%, 100% {
+        opacity: 1;
+        }
+        50% {
+        opacity: 0.5;
+        }
+    }
+    
+    .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    /* Transiciones suaves para elementos interactivos */
+    .transition-all {
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 300ms;
+    }
+    
+    /* Mejorar la visualización en pantallas más pequeñas */
+    @media (max-width: 640px) {
+        .page-container {
+        padding: 0.75rem;
+        }
+        
+        .card-container {
+        margin-bottom: 0.75rem;
+        }
+    }

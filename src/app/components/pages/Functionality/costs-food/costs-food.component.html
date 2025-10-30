@@ -1,0 +1,270 @@
+<!-- Encabezado -->
+<header class="bg-white shadow-md py-4">
+  <div class="w-full px-4">
+    <h1 class="text-3xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+      <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+        💰 Costo de alimentos
+      </span>
+    </h1>
+  </div>
+</header>
+
+<!-- Card 1 : Radio Buttons, Botón agregar, Filtro de búsqueda y botón de descarga -->
+<div class="container mx-auto my-6 p-4 bg-white shadow-md rounded-lg">
+
+  <!-- Radio Buttons para seleccionar Galpón y Botón agregar -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+
+    <!-- Radios -->
+    <div class="flex flex-wrap gap-2">
+      <div class="flex items-center" *ngFor="let shed of sheds">
+        <input type="radio" [id]="shed.name" name="shed" [value]="shed.name" [(ngModel)]="selectedShed"
+          (change)="onShedChange()" class="hidden peer" />
+        <label [for]="shed.name" class="cursor-pointer px-4 py-2 rounded-full border border-blue-500 text-blue-500 text-sm
+                 transition-all duration-200 peer-checked:bg-blue-500 peer-checked:text-white
+                 hover:scale-105 hover:shadow-md">
+          {{ shed.name }}
+        </label>
+      </div>
+    </div>
+
+    <!-- Botón Agregar -->
+    <div class="w-full sm:w-auto">
+      <button *ngIf="!showInactive" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-4 rounded
+               flex justify-center items-center text-sm sm:text-base
+               transition-transform duration-300 transform hover:scale-105 hover:shadow-md"
+        (click)="openCreateModal()">
+        <i class="fas fa-plus mr-2"></i> Agregar Costo
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtro de búsqueda y botón de descarga -->
+  <div *ngIf="!showInactive" class="flex flex-col sm:flex-row sm:justify-between gap-4">
+
+    <!-- Filtro -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full sm:w-2/3">
+      <label for="costWeekNumberFilter" class="text-sm font-semibold text-gray-700">Buscar por semana:</label>
+      <input id="costWeekNumberFilter" type="text"
+        class="border rounded px-3 py-2 text-sm w-full sm:w-auto flex-1 focus:ring-2 focus:ring-blue-300"
+        [(ngModel)]="costWeekNumberFilter" placeholder="Número de Semana" />
+      <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-sm sm:text-base
+               transition-transform duration-300 transform hover:scale-105 hover:shadow-md"
+        (click)="filterByWeekNumber()">
+        Buscar
+      </button>
+    </div>
+
+    <!-- Botón de descargas -->
+    <div class="relative w-full sm:w-auto">
+      <button class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded
+               flex justify-center items-center text-sm sm:text-base
+               transition-transform duration-300 transform hover:scale-105 hover:shadow-md" (click)="toggleDownload()">
+        Descargar <i class="fas fa-download ml-2"></i>
+      </button>
+      <div class="absolute right-0 mt-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10"
+        [ngClass]="{ 'hidden': !downloadOpen }">
+        <ul>
+          <li>
+            <button
+              class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+              PDF
+            </button>
+          </li>
+          <li>
+            <button
+              class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+              Excel
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 2: Cantidad de gallinas, Costo total y Cantidad total -->
+<div *ngIf="!showInactive" class="container mx-auto my-6 p-4 bg-white shadow-md rounded-lg">
+  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+
+    <!-- Bloque reutilizable -->
+    <div
+      class="flex flex-col flex-1 transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+      <p class="text-sm font-semibold text-gray-700 mb-1">Cantidad de gallinas:</p>
+      <div class="flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-md px-4 py-2">
+        <img src="https://img.icons8.com/emoji/48/000000/chicken-emoji.png" alt="Gallinas" class="w-6 h-6">
+        <span class="text-lg font-semibold text-gray-800">{{ quantityHens }}</span>
+      </div>
+    </div>
+
+    <!-- Costo total -->
+    <div
+      class="flex flex-col flex-1 transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+      <p class="text-sm font-semibold text-gray-700 mb-1">Costo total:</p>
+      <div class="flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-md px-4 py-2">
+        <img src="https://img.icons8.com/ios-filled/24/money--v1.png" alt="Costo" class="w-5 h-5">
+        <span class="text-lg font-semibold text-gray-800">s/{{ totalCost.toFixed(2) }}</span>
+      </div>
+    </div>
+
+    <!-- Cantidad total (Semanal) -->
+    <div
+      class="flex flex-col flex-1 transition-transform transform hover:scale-105 hover:shadow-lg duration-300 ease-in-out">
+      <p class="text-sm font-semibold text-gray-700 mb-1">Cantidad total:</p>
+      <div class="flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-md px-4 py-2">
+        <img src="https://img.icons8.com/?size=100&id=Vw4aDHX8rsaZ&format=png&color=000000" alt="Cantidad total"
+          class="w-5 h-5">
+        <span class="text-lg font-semibold text-gray-800">{{ totalKg.toFixed(2) }}kg</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Card 3 : Switcher de estado y tabla de datos -->
+<div class="container mx-auto my-6 p-4 bg-white shadow-md rounded-lg">
+  <!-- Switcher de Estado -->
+  <div class="flex items-center mb-4">
+    <span class="text-lg font-semibold text-gray-700">Mostrar: </span>
+    <label class="relative inline-flex items-center cursor-pointer" for="toggleInactive">
+      <input type="checkbox" class="sr-only peer" id="toggleInactive" (change)="toggleCostList()"
+        [checked]="!showInactive">
+      <div
+        class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+      </div>
+      <span class="ml-3 text-sm font-medium text-gray-900">
+        {{ showInactive ? 'Costo de Alimentos Inactivos' : 'Costo de Alimentos Activos' }}
+      </span>
+    </label>
+  </div>
+
+  <!-- Tabla de datos -->
+  <div class="overflow-auto">
+    <table class="min-w-full text-center border-separate" style="border-spacing: 0 10px;">
+      <thead>
+        <tr>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Semana</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Tipo</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">
+            Ración <span class="text-sm font-normal text-gray-600">(diaria)</span>
+          </th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">
+            Cantidad <span class="text-sm font-normal text-gray-600">(semanal)</span>
+          </th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">
+            Costo <span class="text-sm font-normal text-gray-600">(semanal)</span>
+          </th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Fecha Inicial</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100">Fecha Final</th>
+          <th class="px-6 py-3 text-lg font-semibold text-blue-900 bg-blue-100 rounded-tr-lg">Acciones
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Spinner de carga -->
+        <tr *ngIf="isLoading">
+          <td colspan="8" class="py-8 text-center">
+            <div class="flex justify-center">
+              <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+            </div>
+            <p class="mt-4 text-blue-600 font-medium">Cargando datos...</p>
+          </td>
+        </tr>
+        <!-- Mensaje si no hay datos -->
+        <tr *ngIf="!isLoading && getTableData().length === 0">
+          <td colspan="8" class="py-6 text-center text-gray-500 italic">
+            No hay datos que mostrar.
+          </td>
+        </tr>
+        <!-- Iterar sobre la lista de alimentos -->
+        <tr *ngFor="let cost of getTableData()">
+          <td class="px-6 py-4 bg-gray-100" data-label="Semana">{{ cost.weekNumber }}</td>
+          <td class="px-6 py-4 bg-gray-100 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
+            [attr.title]="cost.foodType" data-label="Tipo de Alimento">
+            {{ cost.foodType.split(' ')[0] }}
+          </td>
+          <td class="px-6 py-4 bg-gray-100" data-label="gr por Gallina">{{ cost.gramsPerChicken }}gr</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Total en kg">{{ cost.totalKg }}kg</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Costo Total">s/{{ cost.totalCost }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Fecha Inicial">{{ cost.startDate | date:'dd/MMM/yy' }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Fecha Final">{{ cost.endDate | date:'dd/MMM/yy' }}</td>
+          <td class="px-6 py-4 bg-gray-100" data-label="Acciones">
+
+            <ng-container *ngIf="showInactive">
+              <button class="btn btn-sm" data-bs-toggle="tooltip" (click)="openModalRestore(cost.idFoodCosts)"
+                title="Restaurar">
+                <img src="https://img.icons8.com/?size=100&id=50827&format=png&color=40C057" alt="Restaurar"
+                  style="width: 20px; height: 20px;">
+              </button>
+              <button class="btn btn-sm" data-bs-toggle="tooltip" title="Eliminar físicamente"
+                (click)="openModalDelete(cost.idFoodCosts)">
+                <img src="https://img.icons8.com/?size=100&id=67884&format=png&color=FA5252" alt="Eliminar físicamente"
+                  style="width: 20px; height: 20px;">
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="!showInactive">
+              <button class="btn btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#editEmployeeModal"
+                (click)="editFoodCostData(cost)">
+                <img src="https://img.icons8.com/?size=100&id=H5dKJanZkZNk&format=png&color=228BE6" alt="Editar"
+                  style="width: 25px; height: 25px;">
+              </button>
+              <button class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
+                (click)="openModalDeactivate(cost.idFoodCosts)" title="Eliminar logicamente">
+                <img src="https://img.icons8.com/?size=100&id=67884&format=png&color=12B886" alt="Eliminar logicamente"
+                  style="width: 25px; height: 25px;">
+              </button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginador -->
+  <div class="flex justify-center mt-4 space-x-2">
+    <button class="px-3 py-2 bg-gray-300 rounded-md text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+      [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+      Anterior
+    </button>
+
+    <button *ngFor="let page of getPages()" class="px-3 py-2 rounded-md text-sm font-semibold"
+      [ngClass]="{'bg-blue-500 text-white': currentPage === page, 'bg-gray-200 hover:bg-gray-300': currentPage !== page}"
+      (click)="changePage(page)">
+      {{ page }}
+    </button>
+
+    <button class="px-3 py-2 bg-gray-300 rounded-md text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+      [disabled]="currentPage === getPages().length" (click)="changePage(currentPage + 1)">
+      Siguiente
+    </button>
+  </div>
+</div>
+
+<!-- Modal para insertar un nuevo costo de alimento -->
+<app-create-cost [activeFoods]="activeFoods" [hens]="hens" [filteredWeeks]="filteredWeeks"
+  [selectedFeedType]="selectedFeedType" [selectedHen]="selectedHen" [selectedFood]="selectedFood" [sheds]="sheds"
+  [cycles]="cycles" (costAdded)="onUpdateAfterMetods()">
+</app-create-cost>
+
+<!-- Modal para editar un nuevo costo de alimento --><app-edit-cost [sheds]="sheds" [cycles]="cycles"
+  [activeFoods]="activeFoods" [hens]="hens" [filteredWeeks]="filteredWeeks" [selectedHen]="selectedHen"
+  [selectedFood]="selectedFood" [costToEdit]="costToEdit" [isModalEdit]="isModalEdit"
+  (costUpdated)="onUpdateAfterMetods()">
+</app-edit-cost>
+
+<!-- Modal para desactivar un costo de alimento -->
+<app-deactivate-cost [costIdToDeactivate]="costIdToDeactivate" [isModalDeactivate]="isModalDeactivate"
+  (costDeactivated)="onUpdateAfterMetods()"></app-deactivate-cost>
+
+<!-- Modal para restaurar un costo de alimento -->
+<app-restore-cost [costIdToRestore]="costIdToRestore" [isModalRestore]="isModalRestore"
+  (costRestored)="onUpdateAfterMetods()"></app-restore-cost>
+
+<!-- Modal para eliminar un costo de alimento -->
+<app-delete-cost [costIdToDelete]="costIdToDelete" [isModalDelete]="isModalDelete"
+  (costDeleted)="onUpdateAfterMetods()"></app-delete-cost>

@@ -1,0 +1,55 @@
+/* type-supplier.component.css */
+
+/* Estilos para mejorar la experiencia en dispositivos móviles */
+
+/* Reducir padding en móviles */
+@media (max-width: 640px) {
+    table td, table th {
+      padding: 0.5rem 0.75rem;
+    }
+    
+    .container {
+      padding: 0.75rem;
+    }
+    
+    /* Asegurar que los botones sean tocables en móvil */
+    button, 
+    [type='button'], 
+    [type='submit'] {
+      min-height: 2.5rem;
+      touch-action: manipulation;
+    }
+  }
+  
+  /* Agregar espacio para desplazamiento vertical en dispositivos pequeños */
+  .modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  /* Mejorar el toque en los elementos interactivos */
+  input, select, button {
+    font-size: 16px; /* Previene zoom automático en iOS */
+  }
+  
+  /* Evitar solapamiento de elementos en pantallas pequeñas */
+  .flex-container {
+    flex-wrap: wrap;
+  }
+  
+  /* Mejorar la visibilidad de los elementos activos */
+  .active-element {
+    border: 2px solid rgba(59, 130, 246, 0.5);
+  }
+  
+  /* Optimización para pantallas táctiles */
+  @media (hover: none) {
+    .hover\:bg-gray-100:hover {
+      background-color: inherit;
+    }
+  
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }

@@ -1,0 +1,101 @@
+/* Estilos personalizados para el componente */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.export-dropdown-container {
+  position: relative;
+}
+
+/* Estilos para las pestañas del reporte */
+.tab-content {
+  min-height: 400px;
+}
+
+/* Estilos para los botones de historial y reporte */
+.history-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.report-button {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Estilos para las tarjetas de métricas */
+.metric-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Estilos para el historial */
+.history-entry {
+  transition: all 0.2s ease-in-out;
+}
+
+.history-entry:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos responsivos mejorados */
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none;
+  }
+
+  .mobile-stack {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Estilos para los estados de los badges */
+.status-badge {
+  transition: all 0.2s ease-in-out;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Estilos para los botones de acción */
+.action-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.action-button:hover {
+  transform: scale(1.1);
+}
+
+/* Estilos para el overlay de los modales */
+.modal-overlay {
+  backdrop-filter: blur(4px);
+}
+
+/* Estilos para las animaciones de carga */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

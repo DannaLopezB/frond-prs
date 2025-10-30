@@ -1,0 +1,206 @@
+    <header class="bg-white shadow-md py-4">
+        <div class="w-full px-4">
+        <h1 class="text-2xl font-extrabold text-blue-900 dark:text-blue-400 md:text-4xl">
+            <span class="bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
+                ➡︎ Tipos de Proveedores
+            </span>
+        </h1>
+        </div>
+    </header>
+
+    <div class="container mx-auto my-4 p-3 md:p-4 bg-white shadow-md rounded-lg">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+            <h2 class="text-lg md:text-xl font-bold">Lista de Tipos de Proveedores</h2>
+            
+            <!-- Contenedor de botones -->
+            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <!-- Botón Agregar -->
+                <button class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:px-4 rounded flex items-center justify-center text-sm md:text-base" 
+                        (click)="openModal()">
+                    <i class="fas fa-plus mr-2"></i> Agregar Tipo de Proveedor
+                </button>
+                
+                <!-- Botones de Exportación -->
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <!-- Botón Exportar PDF -->
+                    <button class="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 md:px-4 rounded flex items-center justify-center text-sm md:text-base" 
+                            (click)="exportToPDF()" 
+                            [disabled]="getFilteredSuppliers().length === 0">
+                        <i class="fas fa-file-pdf mr-1 md:mr-2"></i> 
+                        <span class="hidden sm:inline">Exportar </span>PDF
+                    </button>
+                    
+                    <!-- Botón Exportar Excel -->
+                    <button class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 md:px-4 rounded flex items-center justify-center text-sm md:text-base" 
+                            (click)="exportToExcel()" 
+                            [disabled]="getFilteredSuppliers().length === 0">
+                        <i class="fas fa-file-excel mr-1 md:mr-2"></i> 
+                        <span class="hidden sm:inline">Exportar </span>Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Switcher de Estado -->
+        <div class="flex items-center mb-4">
+            <span class="mr-2 font-semibold text-sm md:text-base">Mostrar:</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input 
+                    type="checkbox" 
+                    class="sr-only peer" 
+                    [(ngModel)]="statusActive" 
+                    (ngModelChange)="toggleStatus($event)">
+                <div class="w-10 h-6 bg-red-500 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer 
+                    peer-checked:bg-green-500 
+                    after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white 
+                    after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
+                    peer-checked:after:translate-x-4 peer-checked:after:border-white">
+                </div>
+                <span class="ml-2 text-xs md:text-sm font-medium text-gray-900">
+                    {{ statusActive ? 'Activos' : 'Inactivos' }}
+                </span>
+            </label>
+        </div>
+
+        <!-- Tabla de tipos responsiva -->
+        <div class="overflow-x-auto -mx-3 md:mx-0">
+            <!-- Vista de tabla en pantallas medianas y grandes -->
+            <table class="hidden md:table min-w-full border-separate border-spacing-y-2 text-sm">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Dirección</th>
+                        <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Nombre</th>
+                        <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Ubigeo</th>
+                        <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Estado</th>
+                        <th class="px-4 py-3 font-semibold text-blue-900 bg-blue-100 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let supplier of paginatedSuppliers" class="bg-gray-50 hover:bg-gray-100 text-center">
+                        <td class="px-4 py-3 text-center">{{ supplier.address }}</td>
+                        <td class="px-4 py-3 text-center">{{ supplier.name }}</td>
+                        <td class="px-4 py-3 text-center">{{ getUbigeoName(supplier.ubigeoId) }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span 
+                            class="inline-flex w-5 h-5 rounded-full"
+                            [ngClass]="{'bg-green-500': supplier.status === 'A', 'bg-red-500': supplier.status === 'I'}">
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 flex justify-center space-x-2">
+                            <button *ngIf="supplier.status === 'A'" class="text-blue-500 hover:text-blue-700 text-lg" (click)="openModal(supplier)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button *ngIf="supplier.status === 'A'" class="text-red-500 hover:text-red-700 text-lg" (click)="softDelete(supplier.id)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <button *ngIf="supplier.status === 'I'" class="text-green-500 hover:text-green-700 text-lg" (click)="restore(supplier.id)">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>            
+            </table>
+
+            <!-- Vista de tarjetas para pantallas pequeñas -->
+            <div class="md:hidden">
+                <div *ngFor="let supplier of paginatedSuppliers" class="bg-gray-50 p-4 mb-3 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-semibold text-blue-900">{{ supplier.name }}</h3>
+                        <span 
+                            class="inline-flex w-4 h-4 rounded-full"
+                            [ngClass]="{'bg-green-500': supplier.status === 'A', 'bg-red-500': supplier.status === 'I'}">
+                        </span>
+                    </div>
+                    <div class="text-sm mb-1">
+                        <strong>Dirección:</strong> {{ supplier.address }}
+                    </div>
+                    <div class="text-sm mb-3">
+                        <strong>Ubigeo:</strong> {{ getUbigeoName(supplier.ubigeoId) }}
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button *ngIf="supplier.status === 'A'" class="text-blue-500 hover:text-blue-700" (click)="openModal(supplier)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button *ngIf="supplier.status === 'A'" class="text-red-500 hover:text-red-700" (click)="softDelete(supplier.id)">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button *ngIf="supplier.status === 'I'" class="text-green-500 hover:text-green-700" (click)="restore(supplier.id)">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PAGINADOR -->
+        <div class="flex justify-center items-center mt-4 space-x-1 md:space-x-2">
+            <button 
+                class="px-2 py-1 md:px-3 md:py-2 bg-gray-300 rounded-md text-xs md:text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+                [disabled]="currentPage === 1"
+                (click)="cambiarPagina(currentPage - 1)">
+                Anterior
+            </button>
+        
+            <button 
+                *ngFor="let page of getPages()"
+                class="px-2 py-1 md:px-3 md:py-2 rounded-md text-xs md:text-sm font-semibold"
+                [ngClass]="{'bg-blue-500 text-white': currentPage === page, 'bg-gray-200 hover:bg-gray-300': currentPage !== page}"
+                (click)="cambiarPagina(page)">
+                {{ page }}
+            </button>
+        
+            <button 
+                class="px-2 py-1 md:px-3 md:py-2 bg-gray-300 rounded-md text-xs md:text-sm font-semibold hover:bg-gray-400 disabled:opacity-50"
+                [disabled]="currentPage === getPages().length"
+                (click)="cambiarPagina(currentPage + 1)">
+                Siguiente
+            </button>
+        </div>
+        
+        <!--Modal-->
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-3" *ngIf="isModalOpen">
+            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800">
+                {{ isEdit ? 'Editar' : 'Agregar' }} Tipo de Proveedor
+            </h2>
+        
+            <form #form="ngForm" (ngSubmit)="saveSupplier()" class="space-y-4">
+                <!-- Nombre -->
+                <div>
+                <label class="block text-gray-700 font-medium mb-1 text-sm">Nombre</label>
+                <input type="text" class="w-full p-2 md:p-3 border rounded-lg focus:ring-2 focus:ring-green-400 text-sm"
+                        [(ngModel)]="supplier.name" name="name" required #name="ngModel">
+                <p *ngIf="name.invalid && name.touched" class="text-red-500 text-xs md:text-sm">Este campo es obligatorio.</p>
+                </div>
+        
+                <!-- Dirección -->
+                <div>
+                <label class="block text-gray-700 font-medium mb-1 text-sm">Dirección</label>
+                <input type="text" class="w-full p-2 md:p-3 border rounded-lg focus:ring-2 focus:ring-green-400 text-sm"
+                        [(ngModel)]="supplier.address" name="address" required #address="ngModel">
+                <p *ngIf="address.invalid && address.touched" class="text-red-500 text-xs md:text-sm">Este campo es obligatorio.</p>
+                </div>
+        
+                <!-- Ubigeo -->
+                <div>
+                <label class="block text-gray-700 font-medium mb-1 text-sm">Ubigeo</label>
+                <select class="w-full p-2 md:p-3 border rounded-lg focus:ring-2 focus:ring-green-400 text-sm"
+                        [(ngModel)]="supplier.ubigeoId" name="ubigeoId" required #ubigeoId="ngModel">
+                    <option *ngFor="let ubigeo of ubigeos" [value]="ubigeo.id">
+                    {{ ubigeo.department }} - {{ ubigeo.province }} - {{ ubigeo.district }}
+                    </option>
+                </select>
+                <p *ngIf="ubigeoId.invalid && ubigeoId.touched" class="text-red-500 text-xs md:text-sm">Este campo es obligatorio.</p>
+                </div>
+        
+                <!-- Botones -->
+                <div class="flex justify-end space-x-3">
+                <button type="button" class="bg-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-400 text-sm" 
+                        (click)="closeModal()">Cancelar</button>
+                <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 text-sm" 
+                        [disabled]="!form.valid">Guardar</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
